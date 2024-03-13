@@ -28,15 +28,15 @@ const Keijiban = () => {
     return(
         <div>
             <div>もやもや掲示板</div>
+            <textarea value={newComment} onChange={(e) => setNewComment(e.target.value)}></textarea>
+            <button onClick={handleAddComment}>投稿</button>
             <ul>
-                {comments.map(comment =>(
+                {comments.slice().reverse().map(comment =>(//新しい投稿を上に表示させるために逆順
                     <div key = {comment.id}>
                         <p>{comment.content} {comment.createdAt.toLocaleString()}</p>
                     </div>
                 ))}
             </ul>
-            <textarea value={newComment} onChange={(e) => setNewComment(e.target.value)}></textarea>
-            <button onClick={handleAddComment}>投稿</button>
         </div>
     );
 }
