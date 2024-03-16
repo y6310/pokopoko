@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { IComment, ITag } from "../models";
-
+import Tags from "./Tags";
+import Nitamoyamoya from "./Nitamoyamoya";
+import CommentList from "./CommentList";
+import ChoiceTag from "./ChoiceTag";
 
 const initialComments: IComment[] = [{
     content: "デモ投稿",
@@ -68,66 +71,25 @@ const Keijiban = () => {
 
     return(
         <div>
-            <div>もやもや掲示板</div>
-            
+            <div>もやもや掲示板</div>           
             <textarea value={newComment} onChange={(e) => setNewComment(e.target.value)}></textarea>
-            {choiceTag.map(tag => (
-                <div key={tag.tagid}>
-                    <span>{tag.tagtext}</span>
-                    <button onClick={() => handleDeleteTag(tag.tagid)}>x</button>
-                </div>
-                ))}
-            
             <br></br>
-            <button onClick={() => handleTagButtonClick("#暴言")}>#暴言</button>
-            <button onClick={() => handleTagButtonClick("#暴力")}>#暴力</button>
-            <button onClick={() => handleTagButtonClick("#セクシュアリティ")}>#セクシュアリティ</button>
-            <button onClick={() => handleTagButtonClick("#いじめ")}>#いじめ</button>
-            <button onClick={() => handleTagButtonClick("#家族")}>#家族</button>
-            <button onClick={() => handleTagButtonClick("#勉強")}>#勉強</button>
             <br></br>
-            <button onClick={() => handleTagButtonClick("#お金")}>#お金</button>
-            <button onClick={() => handleTagButtonClick("#健康")}>#健康</button>
-            <button onClick={() => handleTagButtonClick("#仕事")}>#仕事</button>
-            <button onClick={() => handleTagButtonClick("#学校")}>#学校</button>
-            <button onClick={() => handleTagButtonClick("#人間関係")}>#人間関係</button>
-            <button onClick={() => handleTagButtonClick("#しんどい")}>#しんどい</button>
-            <button onClick={() => handleTagButtonClick("#疲れた")}>#疲れた</button>
-
-            <br></br>
+            <ChoiceTag  choiceTag={choiceTag} handleDeleteTag={handleDeleteTag}/>
+            <Tags handleTagButtonClick={handleTagButtonClick} />
+            <br></br>            
             <textarea value={ createTagText } onChange={(e) => setCreateTagText(e.target.value)}></textarea>
             <button onClick={handleCreateTag}>タグ作成</button>
             <br></br>
             <br></br>
             <button onClick={handleAddComment}>投稿</button>
             <div>
-                あなたに似たもやもや
-                {nitamoyas.slice().reverse().map(nitamoya =>(//新しい投稿を上に表示させるために逆順
-                    <div key = {nitamoya.id}>
-                        <p>{nitamoya.content}</p>
-                        {nitamoya.tag && nitamoya.tag.map(tag => (
-                            <span key={tag.tagid}>{tag.tagtext}</span>
-                        ))}
-                        <p>{nitamoya.createdAt.toLocaleString()}</p>
-                    </div>
-                ))}
+            <Nitamoyamoya nitamoyas={nitamoyas}/>
             </div>
-
             <br></br>
             <br></br>
             <br></br>
-
-            <ul>
-                {comments.slice().reverse().map(comment =>(//新しい投稿を上に表示させるために逆順
-                    <div key = {comment.id}>
-                        <p>{comment.content}</p>
-                        {comment.tag && comment.tag.map(tag => (
-                            <span key={tag.tagid}>{tag.tagtext}</span>
-                        ))}
-                        <p>{comment.createdAt.toLocaleString()}</p>
-                    </div>
-                ))}
-            </ul>
+            <CommentList comments={comments}/>
         </div>
     );
 }
