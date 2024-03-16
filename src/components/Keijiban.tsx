@@ -9,6 +9,7 @@ const initialComments: IComment[] = [{
     content: "デモ投稿",
     createdAt: new Date(),
     id: "commentid",
+    username:"ああああ",
     tag:[{ tagtext: "#セクシュアリティ", tagid: "tagid1" }]
 }]
 
@@ -16,6 +17,7 @@ const Keijiban = () => {
     const [comments, setComments] = useState<IComment[]>(initialComments);
     const [nitamoyas, setNitamoyas] = useState<IComment[]>([]);
     const [newComment, setNewComment] = useState<string>("");
+    const [newUserName, setNewUserName] = useState<string>("ユーザー名");
     const [choiceTag, setChoiceTag] = useState<ITag[]>([]);
     const [createTagText, setCreateTagText] = useState<string>("");
 
@@ -46,15 +48,17 @@ const Keijiban = () => {
 
     const handleAddComment = () => {
         if(newComment.trim() !== ""){//空欄ではないときにボタンが押された場合
-            const id = Math.random().toString();//ランダムなIDを生成
+            const id = Math.random().toString();//ランダムなIDを生成 
             const createdAt = new Date();//現在時刻を取得
+            const username = newUserName
             const comment: IComment = {
                 content: newComment,
                 createdAt,
                 id,
+                username,
                 tag: choiceTag.map(tag => ({ tagtext: tag.tagtext, tagid: tag.tagid }))
             };
-    
+            setNewUserName("ユーザー名");
             setNewComment("");//フォームのクリア
             setChoiceTag([]);//タグのクリア
             setComments([...comments, comment])//コメントを追加
@@ -72,7 +76,8 @@ const Keijiban = () => {
     return(
         <div>
             <div>もやもや掲示板</div>           
-            <textarea value={newComment} onChange={(e) => setNewComment(e.target.value)}></textarea>
+            <textarea value={newComment} onChange={(e) => setNewComment(e.target.value)} placeholder="コメント"></textarea>
+            <textarea value={newUserName} onChange={(e) => setNewUserName(e.target.value)} ></textarea>
             <br></br>
             <br></br>
             <ChoiceTag  choiceTag={choiceTag} handleDeleteTag={handleDeleteTag}/>

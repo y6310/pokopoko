@@ -12,6 +12,7 @@ const CommentList: React.FC<commentListProps> = ({comments}) => {
         <ul>
             {comments.slice().reverse().map(comment =>(//新しい投稿を上に表示させるために逆順
                 <div key = {comment.id}>
+                  <p>{comment.username}</p>
                     <p>{comment.content}</p>
                     {comment.tag && comment.tag.map(tag => (
                         <span key={tag.tagid}>{tag.tagtext}</span>

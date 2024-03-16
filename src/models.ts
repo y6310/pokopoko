@@ -2,6 +2,7 @@ export type IComment = {
 content: string
 createdAt: Date
 id: string
+username: string
 tag?: ITag[]
 }
 
