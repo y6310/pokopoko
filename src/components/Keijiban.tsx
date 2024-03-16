@@ -6,14 +6,15 @@ const initialComments: IComment[] = [{
     content: "デモ投稿",
     createdAt: new Date(),
     id: "commentid",
-    tag:[{ tagtext: "#ジェンダー", tagid: "tagid1" }]
+    tag:[{ tagtext: "#セクシュアリティ", tagid: "tagid1" }]
 }]
 
 const Keijiban = () => {
     const [comments, setComments] = useState<IComment[]>(initialComments);
+    const [nitamoyas, setNitamoyas] = useState<IComment[]>([]);
     const [newComment, setNewComment] = useState<string>("");
     const [choiceTag, setChoiceTag] = useState<ITag[]>([]);
-
+    const [createTagText, setCreateTagText] = useState<string>("");
 
     const createTagObject = (tagtext:string):ITag => {
         return {
@@ -32,6 +33,14 @@ const Keijiban = () => {
         setChoiceTag(updatedTags);
     };
 
+    const handleCreateTag = () => {
+        if(createTagText.trim() !==""){
+            const createNewTag = createTagObject("#"+createTagText);
+            setChoiceTag([...choiceTag, createNewTag]);  
+        };
+        setCreateTagText("");//フォームのクリア       
+    };
+
     const handleAddComment = () => {
         if(newComment.trim() !== ""){//空欄ではないときにボタンが押された場合
             const id = Math.random().toString();//ランダムなIDを生成
@@ -46,7 +55,15 @@ const Keijiban = () => {
             setNewComment("");//フォームのクリア
             setChoiceTag([]);//タグのクリア
             setComments([...comments, comment])//コメントを追加
+
+            const nitamoyacomments = comments.filter(comment =>
+                comment.tag &&  comment.tag.some(tag =>//2.一致しているタグが含まれている投稿を選ぶ
+                  choiceTag.some(chTag => chTag.tagtext === tag.tagtext)//1.投稿時に選んだタグとすでに投稿してあるタグと一致するタグを選ぶ
+                )
+              );
+            setNitamoyas(nitamoyacomments);
         }
+
     };
 
     return(
@@ -62,13 +79,43 @@ const Keijiban = () => {
                 ))}
             
             <br></br>
-            <button onClick={() => handleTagButtonClick("#ジェンダー")}>#ジェンダー</button>
+            <button onClick={() => handleTagButtonClick("#暴言")}>#暴言</button>
+            <button onClick={() => handleTagButtonClick("#暴力")}>#暴力</button>
+            <button onClick={() => handleTagButtonClick("#セクシュアリティ")}>#セクシュアリティ</button>
+            <button onClick={() => handleTagButtonClick("#いじめ")}>#いじめ</button>
+            <button onClick={() => handleTagButtonClick("#家族")}>#家族</button>
+            <button onClick={() => handleTagButtonClick("#勉強")}>#勉強</button>
+            <br></br>
+            <button onClick={() => handleTagButtonClick("#お金")}>#お金</button>
             <button onClick={() => handleTagButtonClick("#健康")}>#健康</button>
-            <button onClick={() => handleTagButtonClick("#親")}>#親</button>
-            <button onClick={() => handleTagButtonClick("#兄弟")}>#兄弟</button>
-            
+            <button onClick={() => handleTagButtonClick("#仕事")}>#仕事</button>
+            <button onClick={() => handleTagButtonClick("#学校")}>#学校</button>
+            <button onClick={() => handleTagButtonClick("#人間関係")}>#人間関係</button>
+            <button onClick={() => handleTagButtonClick("#しんどい")}>#しんどい</button>
+            <button onClick={() => handleTagButtonClick("#疲れた")}>#疲れた</button>
+
+            <br></br>
+            <textarea value={ createTagText } onChange={(e) => setCreateTagText(e.target.value)}></textarea>
+            <button onClick={handleCreateTag}>タグ作成</button>
+            <br></br>
             <br></br>
             <button onClick={handleAddComment}>投稿</button>
+            <div>
+                あなたに似たもやもや
+                {nitamoyas.slice().reverse().map(nitamoya =>(//新しい投稿を上に表示させるために逆順
+                    <div key = {nitamoya.id}>
+                        <p>{nitamoya.content}</p>
+                        {nitamoya.tag && nitamoya.tag.map(tag => (
+                            <span key={tag.tagid}>{tag.tagtext}</span>
+                        ))}
+                        <p>{nitamoya.createdAt.toLocaleString()}</p>
+                    </div>
+                ))}
+            </div>
+
+            <br></br>
+            <br></br>
+            <br></br>
 
             <ul>
                 {comments.slice().reverse().map(comment =>(//新しい投稿を上に表示させるために逆順
