@@ -1,11 +1,11 @@
 import React from 'react'
 
-interface TagsProps {
+interface TagscomponentProps {
     handleTagButtonClick: (buttonText: string) => void;
   }
 
 
-const Tags: React.FC<TagsProps> = ({ handleTagButtonClick }) => {
+const Tagscomponent: React.FC<TagscomponentProps> = ({ handleTagButtonClick }) => {
   return (
     <div>
             <button onClick={() => handleTagButtonClick("#暴言")}>#暴言</button>
@@ -26,4 +26,4 @@ const Tags: React.FC<TagsProps> = ({ handleTagButtonClick }) => {
   )
 }
 
-export default Tags
+export default Tagscomponent

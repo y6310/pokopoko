@@ -1,8 +1,8 @@
 import React from 'react';
-import { IComment} from '../models';
+import { Posts} from '../models';
 
 interface NitamoyamoyaProps {
-  nitamoyas: IComment[]; // nitamoyasの型を指定
+  nitamoyas: Posts[]; // nitamoyasの型を指定
 }
 
 const Nitamoyamoya: React.FC<NitamoyamoyaProps> = ({nitamoyas}) => {
@@ -11,12 +11,12 @@ const Nitamoyamoya: React.FC<NitamoyamoyaProps> = ({nitamoyas}) => {
     <div>
       あなたに似たもやもや
       {nitamoyas.slice().reverse().map(nitamoya =>(//新しい投稿を上に表示させるために逆順
-          <div key = {nitamoya.id}>
-              <p>{nitamoya.content}</p>
+          <div key = {nitamoya.post_id}>
+              <p>{nitamoya.post_body}</p>
               {nitamoya.tag && nitamoya.tag.map(tag => (
-                  <span key={tag.tagid}>{tag.tagtext}</span>
+                  <span key={tag.tag_id}>{tag.tag_body}</span>
               ))}
-              <p>{nitamoya.createdAt.toLocaleString()}</p>
+              <p>{nitamoya.created_at.toLocaleString()}</p>
           </div>
       ))}
 
