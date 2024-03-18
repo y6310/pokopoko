@@ -1,12 +1,12 @@
-export type IComment = {
-content: string
-createdAt: Date
-id: string
-username: string
-tag?: ITag[]
+export type Posts = {
+post_id: number;
+user_name: string;
+post_body: string;
+created_at: Date;
+tag?: Tags[];
 }
 
-export type ITag = {
-    tagtext: string
-    tagid: string
+export type Tags = {
+    tag_body: string;
+    tag_id: number;
 }

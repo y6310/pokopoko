@@ -1,30 +1,31 @@
 import React, { useState } from "react";
-import { IComment, ITag } from "../models";
-import Tags from "./Tags";
+import { Posts, Tags } from "../models";
+import Tagscomponent from "./Tagscomponent";
 import Nitamoyamoya from "./Nitamoyamoya";
 import CommentList from "./CommentList";
 import ChoiceTag from "./ChoiceTag";
+import axios from "axios";
 
-const initialComments: IComment[] = [{
-    content: "デモ投稿",
-    createdAt: new Date(),
-    id: "commentid",
-    username:"ああああ",
-    tag:[{ tagtext: "#セクシュアリティ", tagid: "tagid1" }]
+const initialComments: Posts[] = [{
+    post_id: Math.random(),
+    user_name:"ああああ",
+    post_body: "デモ投稿",
+    created_at: new Date(), 
+    tag:[{ tag_body: "#セクシュアリティ", tag_id: Math.random()}]
 }]
 
 const Keijiban = () => {
-    const [comments, setComments] = useState<IComment[]>(initialComments);
-    const [nitamoyas, setNitamoyas] = useState<IComment[]>([]);
+    const [comments, setComments] = useState<Posts[]>(initialComments);
+    const [nitamoyas, setNitamoyas] = useState<Posts[]>([]);
     const [newComment, setNewComment] = useState<string>("");
     const [newUserName, setNewUserName] = useState<string>("ユーザー名");
-    const [choiceTag, setChoiceTag] = useState<ITag[]>([]);
+    const [choiceTag, setChoiceTag] = useState<Tags[]>([]);
     const [createTagText, setCreateTagText] = useState<string>("");
 
-    const createTagObject = (tagtext:string):ITag => {
+    const createTagObject = (tag_body:string):Tags => {
         return {
-          tagtext,
-          tagid: Math.random().toString(), // ランダムなIDを生成して識別子として使用
+            tag_body,
+            tag_id: Math.random(), // ランダムなIDを生成して識別子として使用
         };
       };
 
@@ -33,8 +34,8 @@ const Keijiban = () => {
         setChoiceTag([...choiceTag, newTag]);
     };
 
-    const handleDeleteTag = (tagid: string) =>{
-        const updatedTags = choiceTag.filter(tag => tag.tagid !== tagid);
+    const handleDeleteTag = (tag_id: number) =>{
+        const updatedTags = choiceTag.filter(tag => tag.tag_id !== tag_id);
         setChoiceTag(updatedTags);
     };
 
@@ -46,17 +47,37 @@ const Keijiban = () => {
         setCreateTagText("");//フォームのクリア       
     };
 
+    const postFunction = async () => {
+    
+        const postData = {
+            user_name: newUserName,
+            post_body: newComment,
+            tags: choiceTag.map(tag => tag.tag_body),
+        };    
+
+        try {
+          const response = await axios.post("APIエンドポイントのURL", postData);
+          console.log("Response:", response.data);
+          // 成功時の処理をここに追加
+        } catch (error) {
+          console.error("Error:", error);
+          // エラーハンドリングをここに追加
+        }
+      };
+      
+      
+
     const handleAddComment = () => {
         if(newComment.trim() !== ""){//空欄ではないときにボタンが押された場合
-            const id = Math.random().toString();//ランダムなIDを生成 
-            const createdAt = new Date();//現在時刻を取得
-            const username = newUserName
-            const comment: IComment = {
-                content: newComment,
-                createdAt,
-                id,
-                username,
-                tag: choiceTag.map(tag => ({ tagtext: tag.tagtext, tagid: tag.tagid }))
+            const post_id = Math.random();//ランダムなIDを生成 
+            const created_at = new Date();//現在時刻を取得
+            const user_name = newUserName
+            const comment: Posts = {
+                post_body: newComment,
+                created_at,
+                post_id,
+                user_name,
+                tag: choiceTag.map(tag => ({ tag_body: tag.tag_body, tag_id: tag.tag_id }))
             };
             setNewUserName("ユーザー名");
             setNewComment("");//フォームのクリア
@@ -65,10 +86,12 @@ const Keijiban = () => {
 
             const nitamoyacomments = comments.filter(comment =>
                 comment.tag &&  comment.tag.some(tag =>//2.一致しているタグが含まれている投稿を選ぶ
-                  choiceTag.some(chTag => chTag.tagtext === tag.tagtext)//1.投稿時に選んだタグとすでに投稿してあるタグと一致するタグを選ぶ
+                  choiceTag.some(chTag => chTag.tag_body === tag.tag_body)//1.投稿時に選んだタグとすでに投稿してあるタグと一致するタグを選ぶ
                 )
               );
             setNitamoyas(nitamoyacomments);
+
+            postFunction();
         }
 
     };
@@ -81,7 +104,7 @@ const Keijiban = () => {
             <br></br>
             <br></br>
             <ChoiceTag  choiceTag={choiceTag} handleDeleteTag={handleDeleteTag}/>
-            <Tags handleTagButtonClick={handleTagButtonClick} />
+            <Tagscomponent handleTagButtonClick={handleTagButtonClick} />
             <br></br>            
             <textarea value={ createTagText } onChange={(e) => setCreateTagText(e.target.value)}></textarea>
             <button onClick={handleCreateTag}>タグ作成</button>

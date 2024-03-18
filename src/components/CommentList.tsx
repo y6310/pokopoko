@@ -1,8 +1,8 @@
 import React from 'react';
-import { IComment} from '../models';
+import { Posts } from '../models';
 
 interface commentListProps {
-    comments: IComment[]; // nitamoyasの型を指定
+    comments: Posts[]; // nitamoyasの型を指定
 
   }
 
@@ -11,13 +11,13 @@ const CommentList: React.FC<commentListProps> = ({comments}) => {
     <div>
         <ul>
             {comments.slice().reverse().map(comment =>(//新しい投稿を上に表示させるために逆順
-                <div key = {comment.id}>
-                  <p>{comment.username}</p>
-                    <p>{comment.content}</p>
+                <div key = {comment.post_id}>
+                  <p>{comment.user_name}</p>
+                    <p>{comment.post_body}</p>
                     {comment.tag && comment.tag.map(tag => (
-                        <span key={tag.tagid}>{tag.tagtext}</span>
+                        <span key={tag.tag_id}>{tag.tag_body}</span>
                     ))}
-                    <p>{comment.createdAt.toLocaleString()}</p>
+                    <p>{comment.created_at.toLocaleString()}</p>
                 </div>
             ))}
         </ul>

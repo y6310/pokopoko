@@ -1,9 +1,9 @@
 import React from 'react'
-import { ITag } from '../models';
+import { Tags } from '../models';
 
 interface ChoiceTagProps {
-    choiceTag: ITag[]; // nitamoyasの型を指定
-    handleDeleteTag:(tagid: string) =>void;
+    choiceTag: Tags[]; // nitamoyasの型を指定
+    handleDeleteTag:(tag_id: number) =>void;
 
   }
 
@@ -11,9 +11,9 @@ const ChoiceTag:React.FC<ChoiceTagProps> = ({ choiceTag, handleDeleteTag }) => {
   return (
     <div>
         {choiceTag.map(tag => (
-            <span key={tag.tagid}>
-                <span>{tag.tagtext}</span>
-                <button onClick={() => handleDeleteTag(tag.tagid)}>x</button>
+            <span key={tag.tag_id}>
+                <span>{tag.tag_body}</span>
+                <button onClick={() => handleDeleteTag(tag.tag_id)}>x</button>
             </span>
         ))}
     </div>
