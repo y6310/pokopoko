@@ -1,6 +1,7 @@
 import {useState, useEffect} from 'react'
 import axios from 'axios';
 import { SoudanjohoType } from '../models';
+import Header from "./Header";
 
 const Soudanjoho = () => {
   // const mockData: SoudanjohoType[] = [
@@ -53,8 +54,9 @@ const Soudanjoho = () => {
     setSoudamjohos(searchedJohos); // 検索結果に基づいて配列をセットする
   };
 
-  return (
+  return ( 
     <div>
+      <Header/>
       <p>相談機関情報</p>
     <input
       type="text"

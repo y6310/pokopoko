@@ -4,6 +4,7 @@ import Tagscomponent from "./Tagscomponent";
 import Nitamoyamoya from "./Nitamoyamoya";
 import CommentList from "./CommentList";
 import ChoiceTag from "./ChoiceTag";
+import Header from "./Header";
 import axios from "axios";
 
 const initialComments: Posts[] = [{
@@ -98,6 +99,7 @@ const Keijiban = () => {
 
     return(
         <div>
+            <Header/>
             <div>もやもや掲示板</div>           
             <textarea value={newComment} onChange={(e) => setNewComment(e.target.value)} placeholder="コメント"></textarea>
             <textarea value={newUserName} onChange={(e) => setNewUserName(e.target.value)} ></textarea>
