@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Posts, Tags, SoudanjohoType } from "../models";
+import { Posts, Tags, SoudanjohoType, GetData } from "../models";
 import Tagscomponent from "./Tagscomponent";
 import Nitamoyamoya from "./Nitamoyamoya";
 import Choicesoudan from "./Choicesoudan";
 import ChoiceTag from "./ChoiceTag";
 import Header from "./Header";
 import axios from "axios";
-
+import Data from "./latest-post-sample.json";
 import send from '../Images/send.svg'
+import swal from 'sweetalert2';
 
 const initialComments: Posts[] = [{
     post_id: Math.random(),
@@ -25,6 +26,7 @@ const Toukou = () => {
     const [choiceTag, setChoiceTag] = useState<Tags[]>([]);
     const [choiceSoudan, setChoiceSoudan] = useState<SoudanjohoType[]>([]);
     const [createTagText, setCreateTagText] = useState<string>("");
+    const [jsonData, setJsonData] = useState<GetData[]>([]);
 
 
     const mockData: SoudanjohoType[] = [
@@ -39,11 +41,34 @@ const Toukou = () => {
   
     const [soudanjohos, setSoudamjohos] = useState<SoudanjohoType[]>(mockData);
 
+    const convertGetDataToPosts = (data: GetData[]): Posts[] => {
+      return data.map((item) => ({
+        post_id: item.Id, // post_idとしてIdを使用
+        user_name: item.UserName,
+        post_body: item.PostBody,
+        created_at: new Date(item.CreatedAt), // CreatedAtをDateオブジェクトに変換
+        tag: item.Tags.map((tag) => ({ tag_body: tag.TagBody, tag_id: tag.Id })), // Tagsを適切な形式に変換
+      }));
+    };
+
+    // const convertGetDataToSoudan = (data: GetData): Posts[] => {
+    //   return data.items.map((item) => ({
+    //     post_id: Math.random(),
+    //     user_name: item.UserName,
+    //     post_body: item.PostBody,
+    //     created_at: new Date(),
+    //     tag: item.Tags.map((tag) => ({ tag_body: tag.tag_body, tag_id: Math.random() })),
+    //   }));
+    // };
+
+
     useEffect(() => {
-      const getSoudanjohoData = async () => {
+
+      const getPostData = async () => {
         try {
-          const response = await axios.post("APIエンドポイントのURL");
-          setSoudamjohos(response.data);
+          const response = await axios.get<GetData[]>("./latest-post-sample.json"); // レスポンスの型をGetData[]に変更
+          const postsData: Posts[] = convertGetDataToPosts(response.data);
+          setComments(postsData);
           console.log("Response:", response.data);
           // 成功時の処理をここに追加
         } catch (error) {
@@ -51,8 +76,36 @@ const Toukou = () => {
           // エラーハンドリングをここに追加
         }
       };
+
+      // const fetchData = async () => {
+      //   try {
+      //     const response = await axios.get<GetData[]>('/latest-post-sample.json'); // JSONファイルのパスを指定します
+      //     setJsonData(response.data);
+      //   } catch (error) {
+      //     console.error('Error fetching data:', error);
+      //   }
+      // };
   
-      getSoudanjohoData();
+      // fetchData();
+
+
+
+      // const getSoudanjohoData = async () => {
+      //   try {
+      //     const response = await axios.get<GetData>("APIエンドポイントのURL");
+      //     const postsData: SoudanjohoType[] = convertGetDataToPosts(response.data);
+      //     setSoudamjohos(postsData); // postsDataをセットする必要があります
+      //     console.log("Response:", response.data);
+      //     // 成功時の処理をここに追加
+      //   } catch (error) {
+      //     console.error("Error:", error);
+      //     // エラーハンドリングをここに追加
+      //   }
+      // };
+    
+      // getSoudanjohoData();
+      getPostData();
+      
     }, []);
 
 
@@ -138,11 +191,24 @@ const Toukou = () => {
                 )
               );
 
-            setNitamoyas(nitamoyacomments);
-            setChoiceSoudan(choicesoudans);
-            
+              swal.fire({
+                title: '投稿しますか？',
+                text: '「モヤモヤ検索」にあなたの投稿が表示されます',
 
-            postFunction();
+                confirmButtonText: 'はい',
+                cancelButtonText: 'いいえ',
+                showCancelButton:true,
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  // ユーザーが「はい」をクリックした場合の処理
+                  setNitamoyas(nitamoyacomments);
+                  setChoiceSoudan(choicesoudans);
+                  postFunction();
+                } else {
+                  // ユーザーが「いいえ」をクリックした場合の処理
+                }
+              });
+
         }
 
     };
