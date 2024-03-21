@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Posts, Tags } from "../models";
+import { Posts, Tags, GetData } from "../models";
 import Header from "./Header";
 import axios from "axios";
 
@@ -21,16 +21,26 @@ const Moyakensaku = () => {
   const [lastSearchValue, setLastSearchValue] = useState<string>("");
 
   useEffect(() => {
+    const convertGetDataToPosts = (data: GetData[]): Posts[] => {
+        return data.map((item) => ({
+          post_id: item.Id, // post_idとしてIdを使用
+          user_name: item.UserName,
+          post_body: item.PostBody,
+          created_at: new Date(item.CreatedAt), // CreatedAtをDateオブジェクトに変換
+          tag: item.Tags.map((tag) => ({ tag_body: tag.TagBody, tag_id: tag.Id })), // Tagsを適切な形式に変換
+        }));
+      };
     const getToukouData = async () => {
-      try {
-        const response = await axios.post("APIエンドポイントのURL");
-        setSearchComments(response.data);
-        console.log("Response:", response.data);
-        // 成功時の処理をここに追加
-      } catch (error) {
-        console.error("Error:", error);
-        // エラーハンドリングをここに追加
-      }
+        try {
+            const response = await axios.get<GetData[]>("./latest-post-sample.json"); // レスポンスの型をGetData[]に変更
+            const postsData: Posts[] = convertGetDataToPosts(response.data);
+            setSearchComments(postsData);
+            console.log("Response:", response.data);
+            // 成功時の処理をここに追加
+          } catch (error) {
+            console.error("Error:", error);
+            // エラーハンドリングをここに追加
+          }
     }
 
     getToukouData(); 
@@ -72,7 +82,7 @@ const Moyakensaku = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
     setSearchValue(value); // テキストボックスに値をセットする
-    if (value === "" && lastSearchValue !== "") {
+    if (value === "" || lastSearchValue !== "") {
       setSearchComments(comments); // 検索文字列が空の場合かつ前回検索があった場合は元のデータを表示する
       setLastSearchValue("");
     }
