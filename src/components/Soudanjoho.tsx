@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { SoudanjohoType } from '../models';
+import { SoudanjohoType, GetData,Tags} from '../models';
 import Header from "./Header";
 import soudan from '../Images/soudan.svg';
 
@@ -15,48 +15,70 @@ const Soudanjoho = () => {
     // 他のモックデータも必要に応じて追加
   ];
 
-  const [soudanjohos, setSoudamjohos] = useState<SoudanjohoType[]>(mockData);
+  const [searchsoudanjohos, setSearchSoudamjohos] = useState<SoudanjohoType[]>(mockData);
+  const [searchValueSodan, setSearchValueSodan] = useState<string>("");
+  const [lastSearchValueSodan, setLastSearchValueSodan] = useState<string>("");
 
-  useEffect(() => {
-    const getSoudanjohoData = async () => {
-      try {
-        const response = await axios.post("APIエンドポイントのURL");
-        setSoudamjohos(response.data);
-        console.log("Response:", response.data);
-        // 成功時の処理をここに追加
-      } catch (error) {
-        console.error("Error:", error);
-        // エラーハンドリングをここに追加
-      }
-    };
+  // useEffect(() => {
+  //   const getSoudanjohoData = async () => {
+  //       try {
+  //         const response = await axios.get<GetData>("APIエンドポイントのURL");
+  //         const postsData: SoudanjohoType[] = convertGetDataToPosts(response.data);
+  //         setSoudamjohos(postsData); // postsDataをセットする必要があります
+  //         console.log("Response:", response.data);
+  //         // 成功時の処理をここに追加
+  //       } catch (error) {
+  //         console.error("Error:", error);
+  //         // エラーハンドリングをここに追加
+  //       }
+  //   };
 
-    getSoudanjohoData();
-  }, []);
+  //   getSoudanjohoData();
+  // }, []);
+
 
   const handleInputSearch = (value: string) => {
+    setSearchValueSodan(value);
     if (value === "") {
-      setSoudamjohos(mockData); // 検索文字列が空の場合は元のデータを表示する
+      setSearchSoudamjohos(searchsoudanjohos); // 検索文字列が空の場合は元のデータを表示する
       return;
     }
 
     const searchValue = value.toLowerCase(); // 検索文字列を小文字に変換する
-    const searchedJohos = soudanjohos.filter((soudanjoho) => {
+    const searchedJohos = searchsoudanjohos.filter((searchsoudanjoho) => {
       const isOrganizationMatch =
-        soudanjoho.organization_name.toLowerCase().includes(searchValue) ||
-        soudanjoho.organization_body.toLowerCase().includes(searchValue) ||
-        soudanjoho.link.toLowerCase().includes(searchValue);
+        searchsoudanjoho.organization_name.toLowerCase().includes(searchValue) ||
+        searchsoudanjoho.organization_body.toLowerCase().includes(searchValue) ||
+        searchsoudanjoho.link.toLowerCase().includes(searchValue);
 
       const isTagMatch =
-        soudanjoho.tag &&
-        soudanjoho.tag.some((tag) =>
+        searchsoudanjoho.tag &&
+        searchsoudanjoho.tag.some((tag: Tags) =>
           tag.tag_body.toLowerCase().includes(searchValue)
         );
 
       return isOrganizationMatch || isTagMatch;
     });
 
-    setSoudamjohos(searchedJohos); // 検索結果に基づいて配列をセットする
-  };
+      setSearchSoudamjohos(searchedJohos); // 検索結果に基づいて配列をセットする
+      setLastSearchValueSodan(value);
+    };
+
+    const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === 'Enter') {
+        handleInputSearch(searchValueSodan);
+      }
+    };
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const { value } = e.target;
+      setSearchValueSodan(value); // テキストボックスに値をセットする
+      if (value === "" || lastSearchValueSodan !== "") {
+        setSearchSoudamjohos(mockData); // 検索文字列が空の場合かつ前回検索があった場合は元のデータを表示する
+        setLastSearchValueSodan("");
+      }
+    };
+
 
   return (
     <div className="bg-custom-background fixed top-0 left-0 w-screen h-screen bg-gradient-to-r from-gray-300 to-gray-200 bg-opacity-80 flex mx-auto w-100% h-screen overflow-y-scroll">
@@ -69,19 +91,25 @@ const Soudanjoho = () => {
         <input
           type="text"
           placeholder="Search..."
-          onChange={(e) => handleInputSearch(e.target.value)}
+          value={searchValueSodan}
+          onChange={(e) => handleInputChange(e)}
+          onKeyDown={handleKeyPress}
           className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-indigo-500 mb-3"
         />
-        {soudanjohos.map((soudanjoho) => (
-          <div key={soudanjoho.organization_id} className="bg-white pt-10 pb-10 pl-10 pr-10 mb-10 items-center justify-center rounded-lg">
-            <h2>{soudanjoho.organization_name}</h2>
-            <p>{soudanjoho.organization_body}</p>
-            {soudanjoho.tag && soudanjoho.tag.map(tag => (
-              <span key={tag.tag_id}>{tag.tag_body}</span>
+        <div>
+          <ul>        
+            {searchsoudanjohos.map((soudanjoho) => (
+              <div key={soudanjoho.organization_id} className="bg-white pt-10 pb-10 pl-10 pr-10 mb-10 items-center justify-center rounded-lg">
+              <p>{soudanjoho.organization_name}</p>
+              <p>{soudanjoho.organization_body}</p>
+              {soudanjoho.tag && soudanjoho.tag.map(tag => (
+                <span key={tag.tag_id}>{tag.tag_body}</span>
+              ))}
+              <p><a href={soudanjoho.link}>{soudanjoho.link}</a></p>
+            </div>
             ))}
-            <a href={soudanjoho.link}>{soudanjoho.link}</a>
-          </div>
-        ))}
+          </ul>
+        </div>
       </div>
     </div>
   );
