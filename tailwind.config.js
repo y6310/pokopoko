@@ -6,5 +6,6 @@ module.exports = {
     fontFamily: {},
   },
   plugins: [],
+  important: true,
 }
 
