@@ -1,0 +1,21 @@
+@import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    html {
+      font-family:Zen Maru Gothic;
+    }
+  }
+
+:root {
+    --custom-background:linear-gradient(180deg, #ABABAB 0%, rgba(209, 151, 151, 0.2) 100%);
+    --custom-background-button: linear-gradient(180deg, #5D5ACF 0%, #ABABAB 0.01%, #C07FDF 100%);
+    --custom-background-button-hover:#8301C2;  
+}
+
+.button-color{
+    background-color: var(--custom-background-button-hover);
+  }

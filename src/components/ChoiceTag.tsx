@@ -11,9 +11,9 @@ const ChoiceTag:React.FC<ChoiceTagProps> = ({ choiceTag, handleDeleteTag }) => {
   return (
     <div>
         {choiceTag.map(tag => (
-            <span key={tag.tag_id}>
+            <span key={tag.tag_id}  className = "px-2 py-2">
                 <span>{tag.tag_body}</span>
-                <button onClick={() => handleDeleteTag(tag.tag_id)}>x</button>
+                <button onClick={() => handleDeleteTag(tag.tag_id)}>×</button>
             </span>
         ))}
     </div>
