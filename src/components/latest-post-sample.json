@@ -1,0 +1,106 @@
+[
+    {
+        "Id": 12,
+        "UserName": "かなこ",
+        "PostBody": "暴言、暴力、いじめ、しんどい",
+        "CreatedAt": "2024-03-21T13:41:08Z",
+        "Tags": [
+            {
+                "Id": 1,
+                "TagBody": "暴言"
+            },
+            {
+                "Id": 2,
+                "TagBody": "暴力"
+            },
+            {
+                "Id": 4,
+                "TagBody": "いじめ"
+            },
+            {
+                "Id": 12,
+                "TagBody": "しんどい"
+            }
+        ]
+    },
+    {
+        "Id": 9,
+        "UserName": "けん",
+        "PostBody": "セクシャリティ、疲れた、しんどい、人間関係",
+        "CreatedAt": "2024-03-21T13:41:08Z",
+        "Tags": [
+            {
+                "Id": 3,
+                "TagBody": "セクシュアリティ"
+            },
+            {
+                "Id": 11,
+                "TagBody": "人間関係"
+            },
+            {
+                "Id": 12,
+                "TagBody": "しんどい"
+            },
+            {
+                "Id": 13,
+                "TagBody": "疲れた"
+            }
+        ]
+    },
+    {
+        "Id": 10,
+        "UserName": "さくら",
+        "PostBody": "家族、健康",
+        "CreatedAt": "2024-03-21T13:41:08Z",
+        "Tags": [
+            {
+                "Id": 5,
+                "TagBody": "家族"
+            },
+            {
+                "Id": 8,
+                "TagBody": "健康"
+            }
+        ]
+    },
+    {
+        "Id": 11,
+        "UserName": "はなこ",
+        "PostBody": "暴力、家族、人間関係",
+        "CreatedAt": "2024-03-21T13:41:08Z",
+        "Tags": [
+            {
+                "Id": 2,
+                "TagBody": "暴力"
+            },
+            {
+                "Id": 5,
+                "TagBody": "家族"
+            },
+            {
+                "Id": 11,
+                "TagBody": "人間関係"
+            }
+        ]
+    },
+    {
+        "Id": 14,
+        "UserName": "けん",
+        "PostBody": "お金、仕事、疲れた",
+        "CreatedAt": "2024-03-21T13:41:08Z",
+        "Tags": [
+            {
+                "Id": 7,
+                "TagBody": "お金"
+            },
+            {
+                "Id": 9,
+                "TagBody": "仕事"
+            },
+            {
+                "Id": 13,
+                "TagBody": "疲れた"
+            }
+        ]
+    }
+]
