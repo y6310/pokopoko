@@ -11,9 +11,11 @@ import toshienshoukai from '../Images/toshienshoukai.svg'
 
 const TopPage = () => { 
     return (
-    <div className="bg-custom-background fixed top-0 left-0 w-screen h-screen bg-gradient-to-r from-gray-300 to-gray-200 bg-opacity-80 flex items-center justify-center overflow-y-auto h-screen overflow-y-scroll">
-        <div>
+    <div className="bg-custom-background fixed top-0 left-0 w-screen h-screen bg-gradient-to-r from-gray-300 to-gray-200 bg-opacity-80 overflow-y-auto">
+        <div className = "max-w-screen-lg mx-auto px-6">
+        <div className=" flex items-center justify-center py-10">
         <img src={mokumoya} alt="Icon" className="w-100 h-80 mx-auto "/>
+        </div>
 
         <p className="text-center text-2xl">モヤっとは、モヤモヤを抱えているあなたが一歩踏み出すための掲示板</p>
         
