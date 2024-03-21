@@ -18,8 +18,8 @@ const TopPage = () => {
         </div>
 
         <p className="text-center text-2xl">モヤっとは、モヤモヤを抱えているあなたが一歩踏み出すための掲示板</p>
-        
-        <div className = "pt-10 pl-10 pr-10">
+        <div className="md:mx-40" >
+        <div className = "pt-10 pl-10 pr-10 ">
             <div className="flex items-center ">
                 <img src={send} alt="Icon" className="w-10 h-10 mr-2" />
                 <p className="text-2xl">モヤモヤ投稿</p>
@@ -40,7 +40,7 @@ const TopPage = () => {
                 <img src={tomoyakensaku} alt="Icon" className="mr-2" />
             </Link>
         </div>
-        <div className = "pt-10 pl-10 pr-10">
+        <div className = "pt-10 pl-10 pr-10 pb-10">
             <div className="flex items-center">
                 <img src={soudan} alt="Icon"  className="w-10 h-10 mr-2"/>
                 <p className="text-2xl">モヤモヤ支援先紹介</p>
@@ -49,9 +49,11 @@ const TopPage = () => {
             <Link to="/Soudanjoho">
                 <img src={toshienshoukai} alt="Icon" className="mr-2" />
             </Link>
-        </div>
+            </div>
+            </div>
         </div>
     </div>
+ 
 
     )
 }
