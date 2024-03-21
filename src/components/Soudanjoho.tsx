@@ -6,7 +6,11 @@ import soudan from '../Images/soudan.svg';
 
 const Soudanjoho = () => {
   const mockData: SoudanjohoType[] = [
-    { organization_id: 1, organization_name: "おはよう", organization_body: 'This is a mock organization 1', link: 'http://mocklink1.com' },
+    { organization_id: 1, organization_name: "おはよう", organization_body: 'This is a mock organization 1', link: 'http://mocklink1.com',
+    tag: [{
+      tag_id: 11,
+      tag_body: "#"+"セクシュアリティ"
+  }]},
     { organization_id: 2, organization_name: 'Mock Organization 2', organization_body: 'This is a mock organization 2', link: 'http://mocklink2.com' },
     // 他のモックデータも必要に応じて追加
   ];

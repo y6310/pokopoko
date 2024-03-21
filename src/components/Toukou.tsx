@@ -1,8 +1,8 @@
-import React, { useState } from "react";
-import { Posts, Tags } from "../models";
+import React, { useState, useEffect } from "react";
+import { Posts, Tags, SoudanjohoType } from "../models";
 import Tagscomponent from "./Tagscomponent";
 import Nitamoyamoya from "./Nitamoyamoya";
-
+import Choicesoudan from "./Choicesoudan";
 import ChoiceTag from "./ChoiceTag";
 import Header from "./Header";
 import axios from "axios";
@@ -23,7 +23,38 @@ const Toukou = () => {
     const [newComment, setNewComment] = useState<string>("");
     const [newUserName, setNewUserName] = useState<string>("ユーザー名");
     const [choiceTag, setChoiceTag] = useState<Tags[]>([]);
+    const [choiceSoudan, setChoiceSoudan] = useState<SoudanjohoType[]>([]);
     const [createTagText, setCreateTagText] = useState<string>("");
+
+
+    const mockData: SoudanjohoType[] = [
+      { organization_id: 1, organization_name: "おはよう", organization_body: 'This is a mock organization 1', link: 'http://mocklink1.com' ,
+      tag: [{
+        tag_id: 11,
+        tag_body: "#"+"セクシュアリティ"
+    }]},
+      { organization_id: 2, organization_name: 'Mock Organization 2', organization_body: 'This is a mock organization 2', link: 'http://mocklink2.com' },
+      // 他のモックデータも必要に応じて追加
+    ];
+  
+    const [soudanjohos, setSoudamjohos] = useState<SoudanjohoType[]>(mockData);
+
+    useEffect(() => {
+      const getSoudanjohoData = async () => {
+        try {
+          const response = await axios.post("APIエンドポイントのURL");
+          setSoudamjohos(response.data);
+          console.log("Response:", response.data);
+          // 成功時の処理をここに追加
+        } catch (error) {
+          console.error("Error:", error);
+          // エラーハンドリングをここに追加
+        }
+      };
+  
+      getSoudanjohoData();
+    }, []);
+
 
     const createTagObject = (tag_body:string):Tags => {
         return {
@@ -68,8 +99,16 @@ const Toukou = () => {
         }
       };
       
-      
-
+      // const convertTagsToSoudanjoho = (tags: Tags[]): SoudanjohoType[] => {
+      //   return tags.map(tag => ({
+      //     organization_id: tag.tag_id,
+      //     organization_name: tag.tag_body,
+      //     organization_body: "", // 必要に応じてorganization_bodyの適切な値を追加
+      //     link: '' // 必要に応じてlinkの適切な値を追加
+      //   }));
+      // };
+    
+    // const choicesoudans = convertTagsToSoudanjoho(choiceSoudan);
     const handleAddComment = () => {
         if(newComment.trim() !== ""){//空欄ではないときにボタンが押された場合
             const post_id = Math.random();//ランダムなIDを生成 
@@ -92,7 +131,16 @@ const Toukou = () => {
                   choiceTag.some(chTag => chTag.tag_body === tag.tag_body)//1.投稿時に選んだタグとすでに投稿してあるタグと一致するタグを選ぶ
                 )
               );
+
+              const choicesoudans = soudanjohos.filter(soudanjoho =>
+                soudanjoho.tag && soudanjoho.tag.some(tag =>
+                  choiceTag.some(chTag => chTag.tag_body === tag.tag_body)
+                )
+              );
+
             setNitamoyas(nitamoyacomments);
+            setChoiceSoudan(choicesoudans);
+            
 
             postFunction();
         }
@@ -139,8 +187,7 @@ const Toukou = () => {
             <Nitamoyamoya nitamoyas={nitamoyas}/>
             </div>
             <br></br>
-            <br></br>
-            <br></br>
+            <Choicesoudan  choicesoudans ={ choiceSoudan }/>
             </div>
         </div>
     );
