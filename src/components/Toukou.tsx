@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Posts, Tags, SoudanjohoType, GetData } from "../models";
+import { Posts, Tags, SoudanjohoType, GetData} from "../models";
 import Tagscomponent from "./Tagscomponent";
 import Nitamoyamoya from "./Nitamoyamoya";
 import Choicesoudan from "./Choicesoudan";
