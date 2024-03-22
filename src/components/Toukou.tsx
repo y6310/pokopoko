@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Posts, Tags, SoudanjohoType, GetData} from "../models";
+import { Posts, Tags, SoudanjohoType, GetPostData, GetSoudanData} from "../models";
 import Tagscomponent from "./Tagscomponent";
 import Nitamoyamoya from "./Nitamoyamoya";
 import Choicesoudan from "./Choicesoudan";
@@ -19,14 +19,16 @@ const initialComments: Posts[] = [{
 }]
 
 const Toukou = () => {
-    const [comments, setComments] = useState<Posts[]>(initialComments);
+    const [comments, setComments] = useState<Posts[]>([]);
     const [nitamoyas, setNitamoyas] = useState<Posts[]>([]);
     const [newComment, setNewComment] = useState<string>("");
     const [newUserName, setNewUserName] = useState<string>("ユーザー名");
     const [choiceTag, setChoiceTag] = useState<Tags[]>([]);
     const [choiceSoudan, setChoiceSoudan] = useState<SoudanjohoType[]>([]);
     const [createTagText, setCreateTagText] = useState<string>("");
-    const [jsonData, setJsonData] = useState<GetData[]>([]);
+    const [soudanjohos, setSoudamjohos] = useState<SoudanjohoType[]>([]);
+    // const [jsonPostData, setJsonPostData] = useState<GetPostData[]>([]);
+    // const [jsonSoudanData, setJsonSoudanData] = useState<GetSoudanData[]>([]);
 
 
     const mockData: SoudanjohoType[] = [
@@ -39,9 +41,9 @@ const Toukou = () => {
       // 他のモックデータも必要に応じて追加
     ];
   
-    const [soudanjohos, setSoudamjohos] = useState<SoudanjohoType[]>(mockData);
+    
 
-    const convertGetDataToPosts = (data: GetData[]): Posts[] => {
+    const convertGetToukouTDataToPosts = (data: GetPostData[]): Posts[] => {
       return data.map((item) => ({
         post_id: item.Id, // post_idとしてIdを使用
         user_name: item.UserName,
@@ -51,25 +53,25 @@ const Toukou = () => {
       }));
     };
 
-    // const convertGetDataToSoudan = (data: GetData): Posts[] => {
-    //   return data.items.map((item) => ({
-    //     post_id: Math.random(),
-    //     user_name: item.UserName,
-    //     post_body: item.PostBody,
-    //     created_at: new Date(),
-    //     tag: item.Tags.map((tag) => ({ tag_body: tag.tag_body, tag_id: Math.random() })),
-    //   }));
-    // };
+    const convertGetSoudanDataToSoudan = (data: GetSoudanData[]): SoudanjohoType[] => {
+      return data.map((item) => ({
+        organization_id:item.Id,
+        organization_name: item.OrganizationName,
+        organization_body: item.OrganizationBody,
+        link:item.Link,
+        tag: item.Tags.map((tag) => ({ tag_body: tag.TagBody, tag_id:tag.Id })),
+      }));
+    };
 
 
     useEffect(() => {
 
       const getPostData = async () => {
         try {
-          const response = await axios.get<GetData[]>("./latest-post-sample.json"); // レスポンスの型をGetData[]に変更
-          const postsData: Posts[] = convertGetDataToPosts(response.data);
-          setComments(postsData);
-          console.log("Response:", response.data);
+          const responsePost = await axios.get<GetPostData[]>("./latest-post-sample.json"); // レスポンスの型をGetData[]に変更
+          const postsData: Posts[] = convertGetToukouTDataToPosts(responsePost.data);
+          setComments(postsData);          
+          console.log("Response:", responsePost.data);
           // 成功時の処理をここに追加
         } catch (error) {
           console.error("Error:", error);
@@ -77,33 +79,21 @@ const Toukou = () => {
         }
       };
 
-      // const fetchData = async () => {
-      //   try {
-      //     const response = await axios.get<GetData[]>('/latest-post-sample.json'); // JSONファイルのパスを指定します
-      //     setJsonData(response.data);
-      //   } catch (error) {
-      //     console.error('Error fetching data:', error);
-      //   }
-      // };
-  
-      // fetchData();
-
-
-
-      // const getSoudanjohoData = async () => {
-      //   try {
-      //     const response = await axios.get<GetData>("APIエンドポイントのURL");
-      //     const postsData: SoudanjohoType[] = convertGetDataToPosts(response.data);
-      //     setSoudamjohos(postsData); // postsDataをセットする必要があります
-      //     console.log("Response:", response.data);
-      //     // 成功時の処理をここに追加
-      //   } catch (error) {
-      //     console.error("Error:", error);
-      //     // エラーハンドリングをここに追加
-      //   }
-      // };
+      //相談情報のデータもらったら書き換える
+      const getSoudanjohoData = async () => {
+        try {
+          const responseSoudan = await axios.get<GetSoudanData[]>("./latest-post-sample.json");
+          const SoudanjohosData: SoudanjohoType[] = convertGetSoudanDataToSoudan(responseSoudan.data);
+          setSoudamjohos(SoudanjohosData); // postsDataをセットする必要があります
+          console.log("Response:", responseSoudan.data);
+          // 成功時の処理をここに追加
+        } catch (error) {
+          console.error("Error:", error);
+          // エラーハンドリングをここに追加
+        }
+      };
     
-      // getSoudanjohoData();
+      getSoudanjohoData();
       getPostData();
       
     }, []);
@@ -137,9 +127,9 @@ const Toukou = () => {
     const postFunction = async () => {
     
         const postData = {
-            user_name: newUserName,
-            post_body: newComment,
-            tags: choiceTag.map(tag => tag.tag_body),
+            Username: newUserName,
+            PostBody: newComment,
+            Tags: choiceTag.map(TagBody=> TagBody.tag_body),
         };    
 
         try {

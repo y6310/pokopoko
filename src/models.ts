@@ -18,13 +18,16 @@ export type SoudanjohoType = {
     link:string;
     tag?: Tags[];
 };
-// export type GetItem ={
-//     UserName: string;
-//     PostBody: string;
-//     Tags: Tags[];
-//   }
 
-export type GetData = {
+export type GetSoudanData ={
+    Id: number;
+    OrganizationName: string;
+    OrganizationBody: string;
+    Link: string; // Date型などに変換する必要がある場合はここで変更する
+    Tags: GetTags[];
+  }
+
+export type GetPostData = {
     Id: number;
     UserName: string;
     PostBody: string;

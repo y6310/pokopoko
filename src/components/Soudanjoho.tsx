@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { SoudanjohoType, GetData,Tags} from '../models';
+import { SoudanjohoType, GetSoudanData,Tags} from '../models';
 import Header from "./Header";
 import soudan from '../Images/soudan.svg';
 
@@ -15,26 +15,39 @@ const Soudanjoho = () => {
     // 他のモックデータも必要に応じて追加
   ];
 
-  const [searchsoudanjohos, setSearchSoudamjohos] = useState<SoudanjohoType[]>(mockData);
+  const [searchsoudanjohos, setSearchSoudamjohos] = useState<SoudanjohoType[]>([]);
   const [searchValueSodan, setSearchValueSodan] = useState<string>("");
   const [lastSearchValueSodan, setLastSearchValueSodan] = useState<string>("");
+  const [jsonSoudanData, setJsonSoudanData] = useState<SoudanjohoType[]>([]);//Jsonからとってくる値をいれる、最初にすべての値を取得したあと変更しない
 
-  // useEffect(() => {
-  //   const getSoudanjohoData = async () => {
-  //       try {
-  //         const response = await axios.get<GetData>("APIエンドポイントのURL");
-  //         const postsData: SoudanjohoType[] = convertGetDataToPosts(response.data);
-  //         setSoudamjohos(postsData); // postsDataをセットする必要があります
-  //         console.log("Response:", response.data);
-  //         // 成功時の処理をここに追加
-  //       } catch (error) {
-  //         console.error("Error:", error);
-  //         // エラーハンドリングをここに追加
-  //       }
-  //   };
+  
+  const convertGetSoudanDataToSoudan = (data: GetSoudanData[]): SoudanjohoType[] => {
+    return data.map((item) => ({
+      organization_id:item.Id,
+      organization_name: item.OrganizationName,
+      organization_body: item.OrganizationBody,
+      link:item.Link,
+      tag: item.Tags.map((tag) => ({ tag_body: tag.TagBody, tag_id:tag.Id })),
+    }));
+  };
 
-  //   getSoudanjohoData();
-  // }, []);
+  useEffect(() => {
+    const getSoudanjohoData = async () => {
+      try {
+        const responseSoudan = await axios.get<GetSoudanData[]>("./latest-post-sample.json");
+        const SoudanjohosData: SoudanjohoType[] = convertGetSoudanDataToSoudan(responseSoudan.data);
+        setJsonSoudanData(SoudanjohosData);
+        setSearchSoudamjohos(SoudanjohosData); // postsDataをセットする必要があります
+        console.log("Response:", responseSoudan.data);
+        // 成功時の処理をここに追加
+      } catch (error) {
+        console.error("Error:", error);
+        // エラーハンドリングをここに追加
+      }
+    };
+
+    getSoudanjohoData();
+  }, []);
 
 
   const handleInputSearch = (value: string) => {
@@ -74,7 +87,7 @@ const Soudanjoho = () => {
       const { value } = e.target;
       setSearchValueSodan(value); // テキストボックスに値をセットする
       if (value === "" || lastSearchValueSodan !== "") {
-        setSearchSoudamjohos(mockData); // 検索文字列が空の場合かつ前回検索があった場合は元のデータを表示する
+        setSearchSoudamjohos(jsonSoudanData); // 検索文字列が空の場合かつ前回検索があった場合は元のデータを表示する
         setLastSearchValueSodan("");
       }
     };
