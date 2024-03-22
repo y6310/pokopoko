@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Posts, Tags, GetPostData} from "../models";
 import Header from "./Header";
 import axios from "axios";
-
+import ChoiceTag from "./ChoiceTag";
+import Tagscomponent from "./Tagscomponent";
 import search from '../Images/search.svg'
 
 interface CommentListProps {
@@ -20,6 +21,8 @@ const Moyakensaku = () => {
   const [searchValue, setSearchValue] = useState<string>("");
   const [lastSearchValue, setLastSearchValue] = useState<string>("");
   const [jsonPostData, setJsonPostData] = useState<Posts[]>([]);//Jsonからとってくる値をいれる、最初にすべての値を取得したあと変更しない
+  const [choiceTag, setChoiceTag] = useState<Tags[]>([]);
+  const [createTagText, setCreateTagText] = useState<string>("");
 
   const convertGetToukouDataToPosts = (data: GetPostData[]): Posts[] => {
     return data.map((item) => ({
@@ -30,7 +33,7 @@ const Moyakensaku = () => {
       tag: item.Tags.map((tag) => ({ tag_body: tag.TagBody, tag_id: tag.Id })), // Tagsを適切な形式に変換
     }));
   };
-  
+
   useEffect(() => {
     const getToukouData = async () => {
         try {
@@ -91,6 +94,47 @@ const Moyakensaku = () => {
     }
   };
 
+  const createTagObject = (tag_body:string):Tags => {
+    return {
+        tag_body,
+        tag_id: Math.random(), // ランダムなIDを生成して識別子として使用
+    };
+  };
+
+const handleTagButtonClick = (buttonText: string) => {
+    const newTag = createTagObject(buttonText);
+    setChoiceTag([...choiceTag, newTag]);
+};
+
+const handleDeleteTag = (tag_id: number) =>{
+    const updatedTags = choiceTag.filter(tag => tag.tag_id !== tag_id);
+    setChoiceTag(updatedTags);
+};
+
+const handleCreateTag = () => {
+    if(createTagText.trim() !==""){
+        const createNewTag = createTagObject("#"+createTagText);
+        setChoiceTag([...choiceTag, createNewTag]);  
+    };
+    setCreateTagText("");//フォームのクリア       
+};
+const postFunction = async () => {
+  const postData = {
+      TagBody: choiceTag.map(TagBody=> TagBody.tag_body),
+  };    
+  console.log(postData);
+  try {
+    const responseSoudan = await axios.post("APIエンドポイントのURL", postData);
+    const SoudanjohosData: Posts[] = convertGetToukouDataToPosts(responseSoudan.data);
+    setSearchComments(SoudanjohosData);
+    console.log("Response:", responseSoudan.data);
+    // 成功時の処理をここに追加
+  } catch (error) {
+    console.error("Error:", error);
+    // エラーハンドリングをここに追加
+  }
+};
+
 
   return (
     <div className="bg-custom-background fixed top-0 left-0 w-screen h-screen bg-gradient-to-r from-gray-300 to-gray-200 bg-opacity-80 flex mx-auto w-100% h-screen overflow-y-scroll ">
@@ -107,7 +151,26 @@ const Moyakensaku = () => {
           onChange={(e) =>  handleInputChange(e)}
           onKeyDown={handleKeyPress}
           className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-indigo-500 mb-3"
-        />  
+        />
+                  <div  className="bg-white pt-10 pb-10 pl-10 pr-10 items-center justify-center rounded-lg">
+          <p>タグで検索：タグ選択</p>
+          <div>
+          <ChoiceTag  choiceTag={choiceTag} handleDeleteTag={handleDeleteTag}/>
+          <Tagscomponent handleTagButtonClick={handleTagButtonClick} />
+        </div> 
+     
+        <br></br>
+        <div  className="flex items-center">           
+        <textarea value={ createTagText } onChange={(e) => setCreateTagText(e.target.value)} className = " border border-black-500 rounded-lg"  placeholder="作成したいタグを入力"></textarea>
+        <button onClick={handleCreateTag} className="flex items-center bg-gray-500 opacity-60 rounded-full text-white px-7 py-3 button-hover w-13 ">タグ作成</button>
+        </div>
+        <div className = "flex justify-end">
+              <div className="flex items-center bg-gray-500 opacity-60 rounded-full text-white px-7 py-3 button-hover w-32 ">
+              <img src={search} alt="Icon" className="w-5 h-5 mr-2"/>
+              <button onClick={postFunction}>検索</button>
+              </div>
+            </div>
+        </div>  
         <div>
           <ul>
             {searchcomments.slice().reverse().map(comment => (
