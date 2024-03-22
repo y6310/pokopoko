@@ -207,23 +207,22 @@ const Toukou = () => {
 
         <div className="bg-custom-background fixed top-0 left-0 w-screen h-screen bg-gradient-to-r from-gray-300 to-gray-200 bg-opacity-80 flex mx-auto w-100% overflow-y-scroll">
             <div className="max-w-screen-lg w-full px-6 mx-auto">
-            <Header/>
-            <div className="flex items-center">
-                <img src={send} alt="Icon" className="w-10 h-10 mr-2" />
-                <p className="text-4xl">モヤモヤ投稿</p>
-            </div>
-            <br></br>
-            <textarea value={newUserName} onChange={(e) => setNewUserName(e.target.value)} className="w-96 h-10 border-gray-300 rounded-lg"></textarea>          
-            <br></br>
-            <textarea value={newComment} onChange={(e) => setNewComment(e.target.value)} className="w-96 h-48 border-gray-300 rounded-lg" placeholder="コメント"></textarea>
-            
-            <br></br>
-            <br></br>
-            <div  className="bg-white pt-10 pb-10 pl-10 pr-10 items-center justify-center rounded-lg">
+              <Header/>
+              <div className="flex items-center">
+                  <img src={send} alt="Icon" className="w-10 h-10 mr-2" />
+                  <p className="text-4xl">モヤモヤ投稿</p>
+              </div>
+              <br></br>
+              <textarea value={newUserName} onChange={(e) => setNewUserName(e.target.value)} className="w-96 h-10 border-gray-300 rounded-lg"></textarea>          
+              <br></br>
+              <textarea value={newComment} onChange={(e) => setNewComment(e.target.value)} className="w-96 h-48 border-gray-300 rounded-lg" placeholder="コメント"></textarea>
+              <br></br>
+              <br></br>
+              <div  className="bg-white pt-10 pb-10 pl-10 pr-10 items-center justify-center rounded-lg">
               <p>タグ選択</p>
               <div>
-            <ChoiceTag  choiceTag={choiceTag} handleDeleteTag={handleDeleteTag}/>
-            <Tagscomponent handleTagButtonClick={handleTagButtonClick} />
+              <ChoiceTag  choiceTag={choiceTag} handleDeleteTag={handleDeleteTag}/>
+              <Tagscomponent handleTagButtonClick={handleTagButtonClick} />
             </div>
             <br></br>
             <div  className="flex items-center">           
