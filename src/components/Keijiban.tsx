@@ -57,7 +57,7 @@ const Keijiban = () => {
         };    
 
         try {
-          const response = await axios.post("APIエンドポイントのURL", postData);
+          const response = await axios.post(process.env.REACT_APP_ENDPOINT_URL + "/post-and-search", postData);
           console.log("Response:", response.data);
           // 成功時の処理をここに追加
         } catch (error) {
