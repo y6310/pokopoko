@@ -68,7 +68,7 @@ const Toukou = () => {
 
       const getPostData = async () => {
         try {
-          const responsePost = await axios.get<GetPostData[]>("./latest-post-sample.json"); // レスポンスの型をGetData[]に変更
+          const responsePost = await axios.get<GetPostData[]>(process.env.REACT_APP_ENDPOINT_URL + "/latest"); // レスポンスの型をGetData[]に変更
           const postsData: Posts[] = convertGetToukouTDataToPosts(responsePost.data);
           setComments(postsData);          
           console.log("Response:", responsePost.data);
@@ -82,7 +82,7 @@ const Toukou = () => {
       //相談情報のデータもらったら書き換える
       const getSoudanjohoData = async () => {
         try {
-          const responseSoudan = await axios.get<GetSoudanData[]>("./latest-post-sample.json");
+          const responseSoudan = await axios.get<GetSoudanData[]>(process.env.REACT_APP_ENDPOINT_URL + "/organizations");
           const SoudanjohosData: SoudanjohoType[] = convertGetSoudanDataToSoudan(responseSoudan.data);
           setSoudamjohos(SoudanjohosData); // postsDataをセットする必要があります
           console.log("Response:", responseSoudan.data);
@@ -133,7 +133,7 @@ const Toukou = () => {
         };    
 
         try {
-          const response = await axios.post("APIエンドポイントのURL", postData);
+          const response = await axios.post(process.env.REACT_APP_ENDPOINT_URL + "/post-and-search", postData);
           console.log("Response:", response.data);
           // 成功時の処理をここに追加
         } catch (error) {

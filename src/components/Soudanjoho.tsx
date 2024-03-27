@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { SoudanjohoType, GetSoudanData,Tags} from '../models';
+import { SoudanjohoType, GetSoudanData, Tags } from '../models';
 import Header from "./Header";
 import soudan from '../Images/soudan.svg';
 import ChoiceTag from "./ChoiceTag";
@@ -9,11 +9,13 @@ import search from '../Images/search.svg'
 
 const Soudanjoho = () => {
   const mockData: SoudanjohoType[] = [
-    { organization_id: 1, organization_name: "おはよう", organization_body: 'This is a mock organization 1', link: 'http://mocklink1.com',
-    tag: [{
-      tag_id: 11,
-      tag_body: "#"+"セクシュアリティ"
-  }]},
+    {
+      organization_id: 1, organization_name: "おはよう", organization_body: 'This is a mock organization 1', link: 'http://mocklink1.com',
+      tag: [{
+        tag_id: 11,
+        tag_body: "#" + "セクシュアリティ"
+      }]
+    },
     { organization_id: 2, organization_name: 'Mock Organization 2', organization_body: 'This is a mock organization 2', link: 'http://mocklink2.com' },
     // 他のモックデータも必要に応じて追加
   ];
@@ -26,22 +28,37 @@ const Soudanjoho = () => {
   const [createTagText, setCreateTagText] = useState<string>("");
   const [soudanjohos, setSoudamjohos] = useState<SoudanjohoType[]>([]);
 
-  
+
+
+  const addHashtagToOrgs = (orgsArray: SoudanjohoType[]): SoudanjohoType[] => {
+    return orgsArray.map(org => {
+      if (org.tag && org.tag.length > 0) {
+        org.tag.forEach(tag => {
+          if (tag.tag_body && !tag.tag_body.startsWith("#")) {
+            tag.tag_body = `#${tag.tag_body}`;
+          }
+        });
+      }
+      return org;
+    });
+  };
+
   const convertGetSoudanDataToSoudan = (data: GetSoudanData[]): SoudanjohoType[] => {
     return data.map((item) => ({
-      organization_id:item.Id,
+      organization_id: item.Id,
       organization_name: item.OrganizationName,
       organization_body: item.OrganizationBody,
-      link:item.Link,
-      tag: item.Tags.map((tag) => ({ tag_body: tag.TagBody, tag_id:tag.Id })),
+      link: item.Link,
+      tag: item.Tags.map((tag) => ({ tag_body: tag.TagBody, tag_id: tag.Id })),
     }));
   };
 
   useEffect(() => {
     const getSoudanjohoData = async () => {
       try {
-        const responseSoudan = await axios.get<GetSoudanData[]>("./latest-post-sample.json");
-        const SoudanjohosData: SoudanjohoType[] = convertGetSoudanDataToSoudan(responseSoudan.data);
+        const responseSoudan = await axios.get<GetSoudanData[]>(process.env.REACT_APP_ENDPOINT_URL + "/organizations");
+        const beforeSoudanjohosData: SoudanjohoType[] = convertGetSoudanDataToSoudan(responseSoudan.data);
+        const SoudanjohosData = addHashtagToOrgs(beforeSoudanjohosData)
         setJsonSoudanData(SoudanjohosData);
         setSearchSoudamjohos(SoudanjohosData); // postsDataをセットする必要があります
         console.log("Response:", responseSoudan.data);
@@ -79,58 +96,65 @@ const Soudanjoho = () => {
       return isOrganizationMatch || isTagMatch;
     });
 
-      setSearchSoudamjohos(searchedJohos); // 検索結果に基づいて配列をセットする
-      setLastSearchValueSodan(value);
-    };
-
-    const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-      if (e.key === 'Enter') {
-        handleInputSearch(searchValueSodan);
-      }
-    };
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const { value } = e.target;
-      setSearchValueSodan(value); // テキストボックスに値をセットする
-      if (value === "" || lastSearchValueSodan !== "") {
-        setSearchSoudamjohos(jsonSoudanData); // 検索文字列が空の場合かつ前回検索があった場合は元のデータを表示する
-        setLastSearchValueSodan("");
-      }
-    };
-
-    const createTagObject = (tag_body:string):Tags => {
-      return {
-          tag_body,
-          tag_id: Math.random(), // ランダムなIDを生成して識別子として使用
-      };
-    };
-
-  const handleTagButtonClick = (buttonText: string) => {
-      const newTag = createTagObject(buttonText);
-      setChoiceTag([...choiceTag, newTag]);
+    setSearchSoudamjohos(searchedJohos); // 検索結果に基づいて配列をセットする
+    setLastSearchValueSodan(value);
   };
 
-  const handleDeleteTag = (tag_id: number) =>{
-      const updatedTags = choiceTag.filter(tag => tag.tag_id !== tag_id);
-      setChoiceTag(updatedTags);
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleInputSearch(searchValueSodan);
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    setSearchValueSodan(value); // テキストボックスに値をセットする
+    if (value === "" || lastSearchValueSodan !== "") {
+      setSearchSoudamjohos(jsonSoudanData); // 検索文字列が空の場合かつ前回検索があった場合は元のデータを表示する
+      setLastSearchValueSodan("");
+    }
+  };
+
+  const createTagObject = (tag_body: string): Tags => {
+    return {
+      tag_body,
+      tag_id: Math.random(), // ランダムなIDを生成して識別子として使用
+    };
+  };
+
+  const handleTagButtonClick = (buttonText: string) => {
+    const newTag = createTagObject(buttonText);
+    setChoiceTag([...choiceTag, newTag]);
+  };
+
+  const handleDeleteTag = (tag_id: number) => {
+    const updatedTags = choiceTag.filter(tag => tag.tag_id !== tag_id);
+    setChoiceTag(updatedTags);
   };
 
   const handleCreateTag = () => {
-      if(createTagText.trim() !==""){
-          const createNewTag = createTagObject("#"+createTagText);
-          setChoiceTag([...choiceTag, createNewTag]);  
-      };
-      setCreateTagText("");//フォームのクリア       
+    if (createTagText.trim() !== "") {
+      const createNewTag = createTagObject("#" + createTagText);
+      setChoiceTag([...choiceTag, createNewTag]);
+    };
+    setCreateTagText("");//フォームのクリア       
   };
 
   const postFunction = async () => {
-    const postData = {
-        TagBody: choiceTag.map(TagBody=> TagBody.tag_body),
-    };    
-    console.log(postData);
+    const convertTagsArray = (choiceTag: Tags[]): { TagBody: string }[] => {
+      return choiceTag.map(({ tag_body }) => ({ TagBody: tag_body.substring(1) }));
+    };
+    const postData = convertTagsArray(choiceTag)
+    console.log(postData)
+
     try {
-      const responseSoudan = await axios.post("APIエンドポイントのURL", postData);
-      const SoudanjohosData: SoudanjohoType[] = convertGetSoudanDataToSoudan(responseSoudan.data);
+      const responseSoudan = await axios.post(process.env.REACT_APP_ENDPOINT_URL + "/orgssearch", postData);
+      const beforeSoudanjohosData: SoudanjohoType[] = convertGetSoudanDataToSoudan(responseSoudan.data);
+        const SoudanjohosData = addHashtagToOrgs(beforeSoudanjohosData)
+        setJsonSoudanData(SoudanjohosData);
+        setSearchSoudamjohos(SoudanjohosData); // postsDataをセットする必要があります
+        
+      setJsonSoudanData(SoudanjohosData);
       setSearchSoudamjohos(SoudanjohosData);
       console.log("Response:", responseSoudan.data);
       // 成功時の処理をここに追加
@@ -156,42 +180,42 @@ const Soudanjoho = () => {
           onKeyDown={handleKeyPress}
           className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-indigo-500 mb-3"
         />
-          <div  className="bg-white pt-10 pb-10 pl-10 pr-10 items-center justify-center rounded-lg">
+        <div className="bg-white pt-10 pb-10 pl-10 pr-10 items-center justify-center rounded-lg">
           <p>タグで検索：タグ選択</p>
           <div>
-          <ChoiceTag  choiceTag={choiceTag} handleDeleteTag={handleDeleteTag}/>
-          <Tagscomponent handleTagButtonClick={handleTagButtonClick} />
-        </div> 
-     
-        <br></br>
-        <div  className="flex items-center">           
-        <textarea value={ createTagText } onChange={(e) => setCreateTagText(e.target.value)} className = " border border-black-500 rounded-lg"  placeholder="作成したいタグを入力"></textarea>
-        <button onClick={handleCreateTag} className="flex items-center bg-gray-500 opacity-60 rounded-full text-white px-7 py-3 button-hover w-13 ">タグ作成</button>
-        </div>
-        <div className = "flex justify-end">
-              <div className="flex items-center bg-gray-500 opacity-60 rounded-full text-white px-7 py-3 button-hover w-32 ">
-              <img src={search} alt="Icon" className="w-5 h-5 mr-2"/>
+            <ChoiceTag choiceTag={choiceTag} handleDeleteTag={handleDeleteTag} />
+            <Tagscomponent handleTagButtonClick={handleTagButtonClick} />
+          </div>
+
+          <br></br>
+          <div className="flex items-center">
+            <textarea value={createTagText} onChange={(e) => setCreateTagText(e.target.value)} className=" border border-black-500 rounded-lg" placeholder="作成したいタグを入力"></textarea>
+            <button onClick={handleCreateTag} className="flex items-center bg-gray-500 opacity-60 rounded-full text-white px-7 py-3 button-hover w-13 ">タグ作成</button>
+          </div>
+          <div className="flex justify-end">
+            <div className="flex items-center bg-gray-500 opacity-60 rounded-full text-white px-7 py-3 button-hover w-32 ">
+              <img src={search} alt="Icon" className="w-5 h-5 mr-2" />
               <button onClick={postFunction}>検索</button>
-              </div>
             </div>
+          </div>
         </div>
         <br></br>
         <br></br>
-        <ul>        
-            {searchsoudanjohos.map((soudanjoho) => (
-              <div key={soudanjoho.organization_id} className="bg-white pt-10 pb-10 pl-10 pr-10 mb-10 items-center justify-center rounded-lg">
-                <p>{soudanjoho.organization_name}</p>
-                <p>{soudanjoho.organization_body}</p>
-                {soudanjoho.tag && soudanjoho.tag.map(tag => (
-                  <span key={tag.tag_id}>{tag.tag_body}</span>
-                ))}
-                <p><a href={soudanjoho.link}>{soudanjoho.link}</a></p>
-              </div>
+        <ul>
+          {searchsoudanjohos.map((soudanjoho) => (
+            <div key={soudanjoho.organization_id} className="bg-white pt-10 pb-10 pl-10 pr-10 mb-10 items-center justify-center rounded-lg">
+              <p>{soudanjoho.organization_name}</p>
+              <p>{soudanjoho.organization_body}</p>
+              {soudanjoho.tag && soudanjoho.tag.map(tag => (
+                <span key={tag.tag_id}>{tag.tag_body}</span>
+              ))}
+              <p><a href={soudanjoho.link}>{soudanjoho.link}</a></p>
+            </div>
           ))}
         </ul>
-        </div>
-
       </div>
+
+    </div>
   );
 };
 
