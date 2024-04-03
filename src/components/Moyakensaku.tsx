@@ -11,11 +11,11 @@ interface CommentListProps {
 }
 
 const Moyakensaku = () => {
-  const comments: Posts[] = [
-    { post_id: 1, user_name: 'User1', post_body: 'Comment 1', tag: [{ tag_id: 1, tag_body: 'Tag1' }], created_at: new Date() },
-    { post_id: 2, user_name: 'User2', post_body: 'Comment 2', tag: [{ tag_id: 2, tag_body: 'Tag2' }], created_at: new Date() },
-    // 他のコメント
-  ];
+  // const comments: Posts[] = [
+  //   { post_id: 1, user_name: 'User1', post_body: 'Comment 1', tag: [{ tag_id: 1, tag_body: 'Tag1' }], created_at: new Date() },
+  //   { post_id: 2, user_name: 'User2', post_body: 'Comment 2', tag: [{ tag_id: 2, tag_body: 'Tag2' }], created_at: new Date() },
+  //   // 他のコメント
+  // ];
 
   const [searchcomments, setSearchComments] = useState<Posts[]>([]);//ダミーのときはcomments
   const [searchValue, setSearchValue] = useState<string>("");

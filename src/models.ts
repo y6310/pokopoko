@@ -40,3 +40,14 @@ export type GetTags  = {
     TagBody: string;
 };
 
+export type PostPosts = {
+    user_name: string;
+    post_body: string;
+    tag?: Tags[];
+}
+
+export type GetToukouSoudan = {
+    Posts:GetPostData[];
+    Organizations:GetSoudanData[];
+}
+

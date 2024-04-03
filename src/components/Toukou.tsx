@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Posts, Tags, SoudanjohoType, GetPostData, GetSoudanData} from "../models";
+import { Posts, GetToukouSoudan, Tags, SoudanjohoType, GetPostData, GetSoudanData} from "../models";
 import Tagscomponent from "./Tagscomponent";
 import Nitamoyamoya from "./Nitamoyamoya";
 import Choicesoudan from "./Choicesoudan";
@@ -19,7 +19,7 @@ const initialComments: Posts[] = [{
 }]
 
 const Toukou = () => {
-    const [comments, setComments] = useState<Posts[]>([]);
+    // const [comments, setComments] = useState<Posts[]>([]);
     const [nitamoyas, setNitamoyas] = useState<Posts[]>([]);
     const [newComment, setNewComment] = useState<string>("");
     const [newUserName, setNewUserName] = useState<string>("ユーザー名");
@@ -43,7 +43,7 @@ const Toukou = () => {
   
     
 
-    const convertGetToukouTDataToPosts = (data: GetPostData[]): Posts[] => {
+    const convertGetToukouDataToPosts = (data: GetPostData[]): Posts[] => {
       return data.map((item) => ({
         post_id: item.Id, // post_idとしてIdを使用
         user_name: item.UserName,
@@ -63,40 +63,67 @@ const Toukou = () => {
       }));
     };
 
-
-    useEffect(() => {
-
-      const getPostData = async () => {
-        try {
-          const responsePost = await axios.get<GetPostData[]>(process.env.REACT_APP_ENDPOINT_URL + "/latest"); // レスポンスの型をGetData[]に変更
-          const postsData: Posts[] = convertGetToukouTDataToPosts(responsePost.data);
-          setComments(postsData);          
-          console.log("Response:", responsePost.data);
-          // 成功時の処理をここに追加
-        } catch (error) {
-          console.error("Error:", error);
-          // エラーハンドリングをここに追加
-        }
-      };
-
-      //相談情報のデータもらったら書き換える
-      const getSoudanjohoData = async () => {
-        try {
-          const responseSoudan = await axios.get<GetSoudanData[]>(process.env.REACT_APP_ENDPOINT_URL + "/organizations");
-          const SoudanjohosData: SoudanjohoType[] = convertGetSoudanDataToSoudan(responseSoudan.data);
-          setSoudamjohos(SoudanjohosData); // postsDataをセットする必要があります
-          console.log("Response:", responseSoudan.data);
-          // 成功時の処理をここに追加
-        } catch (error) {
-          console.error("Error:", error);
-          // エラーハンドリングをここに追加
-        }
-      };
+    const convertGetToukouSoudanData = (data: GetToukouSoudan[]): [GetPostData[], GetSoudanData[]] => {
+      const postsData: GetPostData[] = [];
+      const organizationData:GetSoudanData[] = [];
     
-      getSoudanjohoData();
-      getPostData();
+      data.forEach(item => {
+        postsData.push(...item.Posts);
+        organizationData.push(...item.Organizations);
+      });
+    
+      return [postsData, organizationData];
+    };
+
+    const addHashtagToTags = (postsArray: Posts[]): Posts[] => {
+      return postsArray.map(post => {
+        if (post.tag && post.tag.length > 0) {
+          post.tag.forEach(tag => {
+            if (tag.tag_body && !tag.tag_body.startsWith("#")) {
+              tag.tag_body = `#${tag.tag_body}`;
+            }
+          });
+        }
+        return post;
+      });
+    };
+
+
+    // useEffect(() => {
+
+    //   const getPostData = async () => {
+    //     try {
+    //       const responsePost = await axios.get<GetPostData[]>(process.env.REACT_APP_ENDPOINT_URL + "/latest"); // レスポンスの型をGetData[]に変更
+    //       const postsData: Posts[] = convertGetToukouDataToPosts(responsePost.data);
+    //       setComments(postsData);          
+    //       console.log("Response:", responsePost.data);
+    //       // 成功時の処理をここに追加
+    //     } catch (error) {
+    //       console.error("Error:", error);
+    //       // エラーハンドリングをここに追加
+    //     }
+    //   };
+
+    //   //相談情報のデータもらったら書き換える
+    //   const getSoudanjohoData = async () => {
+    //     try {
+    //       const responseSoudan = await axios.get<GetSoudanData[]>(process.env.REACT_APP_ENDPOINT_URL + "/organizations");
+    //       const SoudanjohosData: SoudanjohoType[] = convertGetSoudanDataToSoudan(responseSoudan.data);
+    //       setSoudamjohos(SoudanjohosData); // postsDataをセットする必要があります
+    //       console.log("Response:", responseSoudan.data);
+    //       // 成功時の処理をここに追加
+    //     } catch (error) {
+    //       console.error("Error:", error);
+    //       // エラーハンドリングをここに追加
+    //     }
+    //   };
+    
+    //   getSoudanjohoData();
+    //   getPostData();
+
+    //   console.log("done");
       
-    }, []);
+    // }, []);
 
 
     const createTagObject = (tag_body:string):Tags => {
@@ -125,16 +152,36 @@ const Toukou = () => {
     };
 
     const postFunction = async () => {
-    
+        // Tags型の配列を受け取り、{ tag_body: string }の配列に変換する関数
+        const convertTagsArray = (choiceTag: Tags[]): { TagBody: string }[] => {
+          return choiceTag.map(({ tag_body }) => ({ TagBody: tag_body.substring(1) }));
+        };
+
+        const postTagData = convertTagsArray(choiceTag)
+
         const postData = {
             Username: newUserName,
             PostBody: newComment,
-            Tags: choiceTag.map(TagBody=> TagBody.tag_body),
+            Tags: postTagData,
         };    
 
         try {
-          const response = await axios.post(process.env.REACT_APP_ENDPOINT_URL + "/post-and-search", postData);
-          console.log("Response:", response.data);
+          const responsePost = await axios.post(process.env.REACT_APP_ENDPOINT_URL + "/post-and-search", postData,{
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            timeout: 5000
+          });
+          console.log("Response:", responsePost.data);
+          const  [postsData, organizationData] = convertGetToukouSoudanData(responsePost.data)
+          const nitamoyacomments = convertGetToukouDataToPosts(postsData);
+          // const nitamoyacomments = addHashtagToTags(beforeToukouData)
+          const choicesoudans = convertGetSoudanDataToSoudan(organizationData);
+
+          setNitamoyas(nitamoyacomments);
+          setChoiceSoudan(choicesoudans);
+          // setSearchComments(SoudanjohosData);
+
           // 成功時の処理をここに追加
         } catch (error) {
           console.error("Error:", error);
@@ -154,33 +201,6 @@ const Toukou = () => {
     // const choicesoudans = convertTagsToSoudanjoho(choiceSoudan);
     const handleAddComment = () => {
         if(newComment.trim() !== ""){//空欄ではないときにボタンが押された場合
-            const post_id = Math.random();//ランダムなIDを生成 
-            const created_at = new Date();//現在時刻を取得
-            const user_name = newUserName
-            const comment: Posts = {
-                post_body: newComment,
-                created_at,
-                post_id,
-                user_name,
-                tag: choiceTag.map(tag => ({ tag_body: tag.tag_body, tag_id: tag.tag_id }))
-            };
-            setNewUserName("ユーザー名");
-            setNewComment("");//フォームのクリア
-            setChoiceTag([]);//タグのクリア
-            setComments([...comments, comment])//コメントを追加
-
-            const nitamoyacomments = comments.filter(comment =>
-                comment.tag &&  comment.tag.some(tag =>//2.一致しているタグが含まれている投稿を選ぶ
-                  choiceTag.some(chTag => chTag.tag_body === tag.tag_body)//1.投稿時に選んだタグとすでに投稿してあるタグと一致するタグを選ぶ
-                )
-              );
-
-              const choicesoudans = soudanjohos.filter(soudanjoho =>
-                soudanjoho.tag && soudanjoho.tag.some(tag =>
-                  choiceTag.some(chTag => chTag.tag_body === tag.tag_body)
-                )
-              );
-
               swal.fire({
                 title: '投稿しますか？',
                 text: '「モヤモヤ検索」にあなたの投稿が表示されます',
@@ -189,14 +209,37 @@ const Toukou = () => {
                 cancelButtonText: 'いいえ',
                 showCancelButton:true,
               }).then((result) => {
-                if (result.isConfirmed) {
-                  // ユーザーが「はい」をクリックした場合の処理
-                  setNitamoyas(nitamoyacomments);
-                  setChoiceSoudan(choicesoudans);
+                
+                if (result.isConfirmed) {// ユーザーが「はい」をクリックした場合の処理
+                  // const comment: PostPosts = {
+                  //     post_body: newComment,
+                  //     user_name: newUserName,
+                  //     tag: choiceTag.map(tag => ({ tag_body: tag.tag_body, tag_id: tag.tag_id }))
+                  // };
                   postFunction();
-                } else {
-                  // ユーザーが「いいえ」をクリックした場合の処理
+                  setNewUserName("ユーザー名");
+                  setNewComment("");//フォームのクリア
+                  setChoiceTag([]);//タグのクリア
+                  // setComments([...comments, comment])//コメントを追加
+      
+                  // const nitamoyacomments = comments.filter(comment =>
+                  //     comment.tag &&  comment.tag.some(tag =>//2.一致しているタグが含まれている投稿を選ぶ
+                  //       choiceTag.some(chTag => chTag.tag_body === tag.tag_body)//1.投稿時に選んだタグとすでに投稿してあるタグと一致するタグを選ぶ
+                  //     )
+                  //   );
+      
+                  //   const choicesoudans = soudanjohos.filter(soudanjoho =>
+                  //     soudanjoho.tag && soudanjoho.tag.some(tag =>
+                  //       choiceTag.some(chTag => chTag.tag_body === tag.tag_body)
+                  //     )
+                  //   );
+
+
+                  
+                  // setNitamoyas(nitamoyacomments);
+                  // setChoiceSoudan(choicesoudans);
                 }
+
               });
 
         }
