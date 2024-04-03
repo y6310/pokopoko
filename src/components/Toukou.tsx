@@ -63,15 +63,11 @@ const Toukou = () => {
       }));
     };
 
-    const convertGetToukouSoudanData = (data: GetToukouSoudan[]): [GetPostData[], GetSoudanData[]] => {
-      const postsData: GetPostData[] = [];
-      const organizationData:GetSoudanData[] = [];
-    
-      data.forEach(item => {
-        postsData.push(...item.Posts);
-        organizationData.push(...item.Organizations);
-      });
-    
+    const convertGetToukouSoudanData = (data: { Posts: GetPostData[]; Organizations: GetSoudanData[] }): 
+    [GetPostData[], GetSoudanData[]] => {
+      const postsData: GetPostData[] = data.Posts;
+      const organizationData:GetSoudanData[] = data.Organizations;
+
       return [postsData, organizationData];
     };
 
@@ -173,7 +169,9 @@ const Toukou = () => {
             timeout: 5000
           });
           console.log("Response:", responsePost.data);
-          const  [postsData, organizationData] = convertGetToukouSoudanData(responsePost.data)
+          const  [postsData, organizationData]= convertGetToukouSoudanData(responsePost.data)
+          
+          
           const nitamoyacomments = convertGetToukouDataToPosts(postsData);
           // const nitamoyacomments = addHashtagToTags(beforeToukouData)
           const choicesoudans = convertGetSoudanDataToSoudan(organizationData);
