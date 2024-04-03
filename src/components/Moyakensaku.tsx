@@ -179,7 +179,7 @@ const Moyakensaku = () => {
           onKeyDown={handleKeyPress}
           className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-indigo-500 mb-3"
         />
-        <div className="bg-white pt-10 pb-10 pl-10 pr-10 items-center justify-center rounded-lg">
+        <div className="bg-white pt-10 pb-10 pl-10 pr-10 items-center justify-center rounded-lg mb-10">
           <p>タグで検索：タグ選択</p>
           <div>
             <ChoiceTag choiceTag={choiceTag} handleDeleteTag={handleDeleteTag} />
@@ -202,8 +202,10 @@ const Moyakensaku = () => {
           <ul>
             {searchcomments.slice().reverse().map(comment => (
               <div key={comment.post_id} className="bg-white pt-10 pb-10 pl-10 pr-10 mb-10 items-center justify-center rounded-lg">
-                <p>{comment.user_name}</p>
+                <p className="font-bold">{comment.user_name}</p>
+                <br></br>
                 <p>{comment.post_body}</p>
+                <br></br>
                 {comment.tag && comment.tag.map(tag => (
                   <span key={tag.tag_id}>{tag.tag_body}</span>
                 ))}

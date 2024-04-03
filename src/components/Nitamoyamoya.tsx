@@ -12,10 +12,12 @@ const Nitamoyamoya: React.FC<NitamoyamoyaProps> = ({nitamoyas}) => {
       <p className = "text-4xl mb-3">あなたに似たもやもや</p>
       {nitamoyas.slice().reverse().map(nitamoya =>(//新しい投稿を上に表示させるために逆順
           <div key = {nitamoya.post_id} className="bg-white pt-10 pb-10 pl-10 pr-10 mb-10 items-center justify-center rounded-lg">
-              <p>{nitamoya.user_name}</p>
+              <p className="font-bold">{nitamoya.user_name}</p>
+              <br></br>
               <p>{nitamoya.post_body}</p>
+              <br></br>
               {nitamoya.tag && nitamoya.tag.map(tag => (
-                  <span key={tag.tag_id}>{tag.tag_body}</span>
+                  <span key={tag.tag_id}>#{tag.tag_body}</span>
               ))}
               <p>{nitamoya.created_at.toLocaleString()}</p>
           </div>

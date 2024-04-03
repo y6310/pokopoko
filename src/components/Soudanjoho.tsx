@@ -204,12 +204,16 @@ const Soudanjoho = () => {
         <ul>
           {searchsoudanjohos.map((soudanjoho) => (
             <div key={soudanjoho.organization_id} className="bg-white pt-10 pb-10 pl-10 pr-10 mb-10 items-center justify-center rounded-lg">
-              <p>{soudanjoho.organization_name}</p>
+              <p className="font-bold">{soudanjoho.organization_name}</p>
+              <br></br>
               <p>{soudanjoho.organization_body}</p>
+              <br></br>
+              <p><a href={soudanjoho.link}>{soudanjoho.link}</a></p>
+              <br></br>
               {soudanjoho.tag && soudanjoho.tag.map(tag => (
                 <span key={tag.tag_id}>{tag.tag_body}</span>
               ))}
-              <p><a href={soudanjoho.link}>{soudanjoho.link}</a></p>
+                 
             </div>
           ))}
         </ul>
