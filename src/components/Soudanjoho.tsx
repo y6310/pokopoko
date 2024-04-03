@@ -180,7 +180,7 @@ const Soudanjoho = () => {
           onKeyDown={handleKeyPress}
           className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-indigo-500 mb-3"
         />
-        <div className="bg-white pt-10 pb-10 pl-10 pr-10 items-center justify-center rounded-lg">
+        <div className="bg-white pt-10 pb-10 pl-10 pr-10 items-center justify-center rounded-lg mb-10">
           <p>タグで検索：タグ選択</p>
           <div>
             <ChoiceTag choiceTag={choiceTag} handleDeleteTag={handleDeleteTag} />
@@ -199,24 +199,24 @@ const Soudanjoho = () => {
             </div>
           </div>
         </div>
-        <br></br>
-        <br></br>
-        <ul>
-          {searchsoudanjohos.map((soudanjoho) => (
-            <div key={soudanjoho.organization_id} className="bg-white pt-10 pb-10 pl-10 pr-10 mb-10 items-center justify-center rounded-lg">
-              <p className="font-bold">{soudanjoho.organization_name}</p>
-              <br></br>
-              <p>{soudanjoho.organization_body}</p>
-              <br></br>
-              <p><a href={soudanjoho.link}>{soudanjoho.link}</a></p>
-              <br></br>
-              {soudanjoho.tag && soudanjoho.tag.map(tag => (
-                <span key={tag.tag_id}>{tag.tag_body}</span>
-              ))}
-                 
-            </div>
-          ))}
-        </ul>
+        <div className='pb-5'>
+          <ul>
+            {searchsoudanjohos.map((soudanjoho) => (
+              <div key={soudanjoho.organization_id} className="bg-white pt-10 pb-10 pl-10 pr-10 mb-10 items-center justify-center rounded-lg">
+                <p className="font-bold">{soudanjoho.organization_name}</p>
+                <br></br>
+                <p>{soudanjoho.organization_body}</p>
+                <br></br>
+                <p><a href={soudanjoho.link}>{soudanjoho.link}</a></p>
+                <br></br>
+                {soudanjoho.tag && soudanjoho.tag.map(tag => (
+                  <span key={tag.tag_id}>{tag.tag_body}</span>
+                ))}
+
+              </div>
+            ))}
+          </ul>
+        </div>
       </div>
 
     </div>

@@ -198,7 +198,7 @@ const Moyakensaku = () => {
             </div>
           </div>
         </div>
-        <div>
+        <div className='pb-5'>
           <ul>
             {searchcomments.slice().reverse().map(comment => (
               <div key={comment.post_id} className="bg-white pt-10 pb-10 pl-10 pr-10 mb-10 items-center justify-center rounded-lg">

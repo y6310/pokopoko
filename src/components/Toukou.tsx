@@ -22,7 +22,7 @@ const Toukou = () => {
     // const [comments, setComments] = useState<Posts[]>([]);
     const [nitamoyas, setNitamoyas] = useState<Posts[]>([]);
     const [newComment, setNewComment] = useState<string>("");
-    const [newUserName, setNewUserName] = useState<string>("ユーザー名");
+    const [newUserName, setNewUserName] = useState<string>("");
     const [choiceTag, setChoiceTag] = useState<Tags[]>([]);
     const [choiceSoudan, setChoiceSoudan] = useState<SoudanjohoType[]>([]);
     const [createTagText, setCreateTagText] = useState<string>("");
@@ -254,36 +254,39 @@ const Toukou = () => {
                   <p className="text-4xl">モヤモヤ投稿</p>
               </div>
               <br></br>
-              <textarea value={newUserName} onChange={(e) => setNewUserName(e.target.value)} className="w-96 h-10 border-gray-300 rounded-lg"></textarea>          
+              <textarea value={newUserName} onChange={(e) => setNewUserName(e.target.value)} className="w-96 h-10 border-gray-300 rounded-lg" placeholder="ユーザー名"></textarea>          
               <br></br>
               <textarea value={newComment} onChange={(e) => setNewComment(e.target.value)} className="w-96 h-48 border-gray-300 rounded-lg" placeholder="コメント"></textarea>
               <br></br>
               <br></br>
               <div  className="bg-white pt-10 pb-10 pl-10 pr-10 items-center justify-center rounded-lg">
-              <p>タグ選択</p>
-              <div>
-              <ChoiceTag  choiceTag={choiceTag} handleDeleteTag={handleDeleteTag}/>
-              <Tagscomponent handleTagButtonClick={handleTagButtonClick} />
-            </div>
-            <br></br>
-            <div  className="flex items-center">           
-            <textarea value={ createTagText } onChange={(e) => setCreateTagText(e.target.value)} className = " border border-black-500 rounded-lg"  placeholder="作成したいタグを入力"></textarea>
-            <button onClick={handleCreateTag} className="flex items-center bg-gray-500 opacity-60 rounded-full text-white px-7 py-3 button-hover w-13 ">タグ作成</button>
-            </div> 
-            </div>
-            <br></br>
-            <br></br>
-            <div className = "flex justify-end">
-              <div className="flex items-center bg-gray-500 opacity-60 rounded-full text-white px-7 py-3 button-hover w-32 ">
-              <img src={send} alt="Icon" className="w-5 h-5 mr-2"/>
-              <button onClick={handleAddComment}>投稿</button>
+                <p>タグ選択</p>
+                <div>
+                  <ChoiceTag  choiceTag={choiceTag} handleDeleteTag={handleDeleteTag}/>
+                  <Tagscomponent handleTagButtonClick={handleTagButtonClick} />
+                </div>
+                <br></br>
+                <div  className="flex items-center">           
+                  <textarea value={ createTagText } onChange={(e) => setCreateTagText(e.target.value)} className = " border border-black-500 rounded-lg"  placeholder="作成したいタグを入力"></textarea>
+                  <button onClick={handleCreateTag} className="flex items-center bg-gray-500 opacity-60 rounded-full text-white px-7 py-3 button-hover w-13 ">タグ作成</button>
+                </div> 
               </div>
-            </div>
-            <div>
-            <Nitamoyamoya nitamoyas={nitamoyas}/>
-            </div>
-            <br></br>
-            <Choicesoudan  choicesoudans ={ choiceSoudan }/>
+              <br></br>
+              <br></br>
+              <div className = "flex justify-end">
+                <div className="flex items-center bg-gray-500 opacity-60 rounded-full text-white px-7 py-3 button-hover w-32 ">
+                  <img src={send} alt="Icon" className="w-5 h-5 mr-2"/>
+                  <button onClick={handleAddComment}>投稿</button>
+                </div>
+              </div>
+              <div>
+                <Nitamoyamoya nitamoyas={nitamoyas}/>
+              </div>
+              <br></br>
+              <div>
+                <Choicesoudan  choicesoudans ={ choiceSoudan }/>
+              </div>
+
             </div>
         </div>
     );
