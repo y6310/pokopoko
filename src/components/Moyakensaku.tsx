@@ -56,7 +56,21 @@ const Moyakensaku = () => {
   const handleInputSearch = (value: string) => {
     setSearchValue(value);
     if (value === "") {
-      setSearchComments(jsonPostData); // 検索文字列が空の場合は元のデータを表示する
+      const fetchData = async () => {
+        try {
+        const response = await axios.get<GetPostData[]>(process.env.REACT_APP_ENDPOINT_URL + "/latest"); // レスポンスの型をGetPostData[]に変更
+        const beforepostsData: Posts[] = convertGetToukouDataToPosts(response.data);
+        const postsData = addHashtagToTags(beforepostsData)
+        setJsonPostData(postsData);
+        setSearchComments(postsData);
+        console.log("Response:", response.data);
+        // 成功時の処理をここに追加
+      } catch (error) {
+        console.error("Error:", error);
+        // エラーハンドリングをここに追加
+      } // 検索文字列が空の場合は元のデータを表示する
+    }
+    fetchData();
       return;
     }
 
@@ -133,33 +147,60 @@ const Moyakensaku = () => {
     };
     setCreateTagText("");//フォームのクリア       
   };
-  const postFunction = async () => {
-    // Tags型の配列を受け取り、{ tag_body: string }の配列に変換する関数
-    const convertTagsArray = (choiceTag: Tags[]): { TagBody: string }[] => {
-      return choiceTag.map(({ tag_body }) => ({ TagBody: tag_body.substring(1) }));
-    };
-    const postData = convertTagsArray(choiceTag)
-    console.log(postData)
-    try {
-      const responseSoudan = await axios.post(process.env.REACT_APP_ENDPOINT_URL + "/postsearch", postData, {
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        timeout: 5000
-      });
-      const beforeSoudanjohosData: Posts[] = convertGetToukouDataToPosts(responseSoudan.data);
 
 
-      const SoudanjohosData = addHashtagToTags(beforeSoudanjohosData)
+  const TagSearch = async () => {
+    if (choiceTag.length >= 1) {
+      const convertTagsArray = (choiceTag: Tags[]): { TagBody: string }[] => {
+        return choiceTag.map(({ tag_body }) => ({ TagBody: tag_body.substring(1) }));
+      };
+      const postData = convertTagsArray(choiceTag)
+      console.log(postData)
+      try {
+        const responseSoudan = await axios.post(process.env.REACT_APP_ENDPOINT_URL + "/postsearch", postData, {
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          timeout: 5000
+        });
+        const beforeSoudanjohosData: Posts[] = convertGetToukouDataToPosts(responseSoudan.data);
 
-      setJsonPostData(SoudanjohosData);
-      setSearchComments(SoudanjohosData);
-      console.log("Response:", responseSoudan.data);
-      // 成功時の処理をここに追加
-    } catch (error) {
-      console.error("Error:", error);
-      // エラーハンドリングをここに追加
+        const SoudanjohosData = addHashtagToTags(beforeSoudanjohosData)
+
+        setJsonPostData(SoudanjohosData);
+        setSearchComments(SoudanjohosData);
+        console.log("Response:", responseSoudan.data);
+
+        // 成功時の処理をここに追加
+      } catch (error) {
+        console.error("Error:", error);
+        // エラーハンドリングをここに追加
+      }
+    } else {
+      try {
+        const response = await axios.get<GetPostData[]>(process.env.REACT_APP_ENDPOINT_URL + "/latest"); // レスポンスの型をGetPostData[]に変更
+        const beforepostsData: Posts[] = convertGetToukouDataToPosts(response.data);
+        const postsData = addHashtagToTags(beforepostsData)
+        setJsonPostData(postsData);
+        setSearchComments(postsData);
+        console.log("Response:", response.data);
+        // 成功時の処理をここに追加
+      } catch (error) {
+        console.error("Error:", error);
+        // エラーハンドリングをここに追加
+      }
     }
+  };
+
+
+  useEffect(() => {
+    TagSearch();
+  }, [choiceTag]);
+
+
+  const postFunction = async () => {
+    await TagSearch();
+    handleInputSearch(searchValue);
   };
 
 
@@ -200,7 +241,7 @@ const Moyakensaku = () => {
         </div>
         <div className='pb-5'>
           <ul>
-            {searchcomments.slice().reverse().map(comment => (
+            {searchcomments.slice().map(comment => (
               <div key={comment.post_id} className="bg-white pt-10 pb-10 pl-10 pr-10 mb-10 items-center justify-center rounded-lg">
                 <p className="font-bold">{comment.user_name}</p>
                 <br></br>
