@@ -76,7 +76,22 @@ const Soudanjoho = () => {
   const handleInputSearch = (value: string) => {
     setSearchValueSodan(value);
     if (value === "") {
-      setSearchSoudamjohos(searchsoudanjohos); // 検索文字列が空の場合は元のデータを表示する
+      const getSoudanjohoData = async () => {
+        try {
+          const responseSoudan = await axios.get<GetSoudanData[]>(process.env.REACT_APP_ENDPOINT_URL + "/organizations");
+          const beforeSoudanjohosData: SoudanjohoType[] = convertGetSoudanDataToSoudan(responseSoudan.data);
+          const SoudanjohosData = addHashtagToOrgs(beforeSoudanjohosData)
+          setJsonSoudanData(SoudanjohosData);
+          setSearchSoudamjohos(SoudanjohosData); // postsDataをセットする必要があります
+          console.log("Response:", responseSoudan.data);
+          // 成功時の処理をここに追加
+        } catch (error) {
+          console.error("Error:", error);
+          // エラーハンドリングをここに追加
+        }
+      };
+  
+      getSoudanjohoData();
       return;
     }
 
@@ -140,28 +155,57 @@ const Soudanjoho = () => {
     setCreateTagText("");//フォームのクリア       
   };
 
-  const postFunction = async () => {
-    const convertTagsArray = (choiceTag: Tags[]): { TagBody: string }[] => {
-      return choiceTag.map(({ tag_body }) => ({ TagBody: tag_body.substring(1) }));
-    };
-    const postData = convertTagsArray(choiceTag)
-    console.log(postData)
+  const TagSearch = async () => {
+    if (choiceTag.length >= 1) {
+      const convertTagsArray = (choiceTag: Tags[]): { TagBody: string }[] => {
+        return choiceTag.map(({ tag_body }) => ({ TagBody: tag_body.substring(1) }));
+      };
+      const postData = convertTagsArray(choiceTag)
+      console.log(postData)
+      try {
+        const responseSoudan = await axios.post(process.env.REACT_APP_ENDPOINT_URL + "/postsearch", postData, {
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          timeout: 5000
+        });
+        const beforeSoudanjohosData: SoudanjohoType[] = convertGetSoudanDataToSoudan(responseSoudan.data);
 
-    try {
-      const responseSoudan = await axios.post(process.env.REACT_APP_ENDPOINT_URL + "/orgssearch", postData);
-      const beforeSoudanjohosData: SoudanjohoType[] = convertGetSoudanDataToSoudan(responseSoudan.data);
+
+        const SoudanjohosData = addHashtagToOrgs(beforeSoudanjohosData)
+
+        setJsonSoudanData(SoudanjohosData);
+        setSearchSoudamjohos(SoudanjohosData);
+        console.log("Response:", responseSoudan.data);
+
+        // 成功時の処理をここに追加
+      } catch (error) {
+        console.error("Error:", error);
+        // エラーハンドリングをここに追加
+      }
+    } else {
+      try {
+        const responseSoudan = await axios.get<GetSoudanData[]>(process.env.REACT_APP_ENDPOINT_URL + "/organizations");
+        const beforeSoudanjohosData: SoudanjohoType[] = convertGetSoudanDataToSoudan(responseSoudan.data);
         const SoudanjohosData = addHashtagToOrgs(beforeSoudanjohosData)
         setJsonSoudanData(SoudanjohosData);
         setSearchSoudamjohos(SoudanjohosData); // postsDataをセットする必要があります
-        
-      setJsonSoudanData(SoudanjohosData);
-      setSearchSoudamjohos(SoudanjohosData);
-      console.log("Response:", responseSoudan.data);
-      // 成功時の処理をここに追加
-    } catch (error) {
-      console.error("Error:", error);
-      // エラーハンドリングをここに追加
+        console.log("Response:", responseSoudan.data);
+        // 成功時の処理をここに追加
+      } catch (error) {
+        console.error("Error:", error);
+        // エラーハンドリングをここに追加
+      }
     }
+  };
+  
+  useEffect(() => {
+    TagSearch();
+  }, [choiceTag]);
+
+  const postFunction = async () => {
+    await TagSearch();
+    handleInputSearch(searchValueSodan);
   };
 
   return (
