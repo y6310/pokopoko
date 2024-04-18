@@ -200,7 +200,9 @@ const Moyakensaku = () => {
 
   const postFunction = async () => {
     await TagSearch();
-    handleInputSearch(searchValue);
+    if(searchValue !==""){
+      handleInputSearch(searchValue);
+    }
   };
 
 

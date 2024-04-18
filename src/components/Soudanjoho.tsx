@@ -205,7 +205,9 @@ const Soudanjoho = () => {
 
   const postFunction = async () => {
     await TagSearch();
-    handleInputSearch(searchValueSodan);
+    if(searchValueSodan !==""){
+      handleInputSearch(searchValueSodan);
+    }
   };
 
   return (
