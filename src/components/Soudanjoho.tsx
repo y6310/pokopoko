@@ -163,7 +163,7 @@ const Soudanjoho = () => {
       const postData = convertTagsArray(choiceTag)
       console.log(postData)
       try {
-        const responseSoudan = await axios.post(process.env.REACT_APP_ENDPOINT_URL + "/postsearch", postData, {
+        const responseSoudan = await axios.post(process.env.REACT_APP_ENDPOINT_URL + "/orgssearch", postData, {
           headers: {
             'Content-Type': 'application/json'
           },
