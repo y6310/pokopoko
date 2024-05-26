@@ -22,11 +22,10 @@ const Soudanjoho = () => {
 
   const [searchsoudanjohos, setSearchSoudamjohos] = useState<SoudanjohoType[]>([]);
   const [searchValueSodan, setSearchValueSodan] = useState<string>("");
-  const [lastSearchValueSodan, setLastSearchValueSodan] = useState<string>("");
   const [jsonSoudanData, setJsonSoudanData] = useState<SoudanjohoType[]>([]);//Jsonからとってくる値をいれる、最初にすべての値を取得したあと変更しない
   const [choiceTag, setChoiceTag] = useState<Tags[]>([]);
   const [createTagText, setCreateTagText] = useState<string>("");
-  const [soudanjohos, setSoudamjohos] = useState<SoudanjohoType[]>([]);
+
 
 
 
@@ -73,61 +72,57 @@ const Soudanjoho = () => {
   }, []);
 
 
-  const handleInputSearch = (value: string) => {
-    setSearchValueSodan(value);
-    if (value === "") {
-      const getSoudanjohoData = async () => {
-        try {
-          const responseSoudan = await axios.get<GetSoudanData[]>(process.env.REACT_APP_ENDPOINT_URL + "/organizations");
-          const beforeSoudanjohosData: SoudanjohoType[] = convertGetSoudanDataToSoudan(responseSoudan.data);
-          const SoudanjohosData = addHashtagToOrgs(beforeSoudanjohosData)
-          setJsonSoudanData(SoudanjohosData);
-          setSearchSoudamjohos(SoudanjohosData); // postsDataをセットする必要があります
-          console.log("Response:", responseSoudan.data);
-          // 成功時の処理をここに追加
-        } catch (error) {
-          console.error("Error:", error);
-          // エラーハンドリングをここに追加
-        }
-      };
+  // const handleInputSearch = (value: string) => {
+  //   setSearchValueSodan(value);
+  //   if (value === "") {
+  //     const getSoudanjohoData = async () => {
+  //       try {
+  //         const responseSoudan = await axios.get<GetSoudanData[]>(process.env.REACT_APP_ENDPOINT_URL + "/organizations");
+  //         const beforeSoudanjohosData: SoudanjohoType[] = convertGetSoudanDataToSoudan(responseSoudan.data);
+  //         const SoudanjohosData = addHashtagToOrgs(beforeSoudanjohosData)
+  //         setJsonSoudanData(SoudanjohosData);
+  //         setSearchSoudamjohos(SoudanjohosData); // postsDataをセットする必要があります
+  //         console.log("Response:", responseSoudan.data);
+  //         // 成功時の処理をここに追加
+  //       } catch (error) {
+  //         console.error("Error:", error);
+  //         // エラーハンドリングをここに追加
+  //       }
+  //     };
   
-      getSoudanjohoData();
-      return;
-    }
+  //     getSoudanjohoData();
+  //     return;
+  //   }
 
-    const searchValue = value.toLowerCase(); // 検索文字列を小文字に変換する
-    const searchedJohos = searchsoudanjohos.filter((searchsoudanjoho) => {
-      const isOrganizationMatch =
-        searchsoudanjoho.organization_name.toLowerCase().includes(searchValue) ||
-        searchsoudanjoho.organization_body.toLowerCase().includes(searchValue) ||
-        searchsoudanjoho.link.toLowerCase().includes(searchValue);
+  //   const searchValue = value.toLowerCase(); // 検索文字列を小文字に変換する
+  //   const searchedJohos = searchsoudanjohos.filter((searchsoudanjoho) => {
+  //     const isOrganizationMatch =
+  //       searchsoudanjoho.organization_name.toLowerCase().includes(searchValue) ||
+  //       searchsoudanjoho.organization_body.toLowerCase().includes(searchValue) ||
+  //       searchsoudanjoho.link.toLowerCase().includes(searchValue);
 
-      const isTagMatch =
-        searchsoudanjoho.tag &&
-        searchsoudanjoho.tag.some((tag: Tags) =>
-          tag.tag_body.toLowerCase().includes(searchValue)
-        );
+  //     const isTagMatch =
+  //       searchsoudanjoho.tag &&
+  //       searchsoudanjoho.tag.some((tag: Tags) =>
+  //         tag.tag_body.toLowerCase().includes(searchValue)
+  //       );
 
-      return isOrganizationMatch || isTagMatch;
-    });
+  //     return isOrganizationMatch || isTagMatch;
+  //   });
 
-    setSearchSoudamjohos(searchedJohos); // 検索結果に基づいて配列をセットする
-    setLastSearchValueSodan(value);
-  };
+  //   setSearchSoudamjohos(searchedJohos); // 検索結果に基づいて配列をセットする
+  //   setLastSearchValueSodan(value);
+  // };
 
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      handleInputSearch(searchValueSodan);
-    }
-  };
+  // const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  //   if (e.key === 'Enter') {
+  //     handleInputSearch(searchValueSodan);
+  //   }
+  // };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
     setSearchValueSodan(value); // テキストボックスに値をセットする
-    if (value === "" || lastSearchValueSodan !== "") {
-      setSearchSoudamjohos(jsonSoudanData); // 検索文字列が空の場合かつ前回検索があった場合は元のデータを表示する
-      setLastSearchValueSodan("");
-    }
   };
 
   const createTagObject = (tag_body: string): Tags => {
@@ -173,14 +168,15 @@ const Soudanjoho = () => {
 
 
         const SoudanjohosData = addHashtagToOrgs(beforeSoudanjohosData)
-
-        setJsonSoudanData(SoudanjohosData);
-        setSearchSoudamjohos(SoudanjohosData);
+        return SoudanjohosData;
+        // setJsonSoudanData(SoudanjohosData);
+        // setSearchSoudamjohos(SoudanjohosData);
         console.log("Response:", responseSoudan.data);
 
         // 成功時の処理をここに追加
       } catch (error) {
         console.error("Error:", error);
+        return [];
         // エラーハンドリングをここに追加
       }
     } else {
@@ -188,27 +184,43 @@ const Soudanjoho = () => {
         const responseSoudan = await axios.get<GetSoudanData[]>(process.env.REACT_APP_ENDPOINT_URL + "/organizations");
         const beforeSoudanjohosData: SoudanjohoType[] = convertGetSoudanDataToSoudan(responseSoudan.data);
         const SoudanjohosData = addHashtagToOrgs(beforeSoudanjohosData)
-        setJsonSoudanData(SoudanjohosData);
-        setSearchSoudamjohos(SoudanjohosData); // postsDataをセットする必要があります
+        // setJsonSoudanData(SoudanjohosData);
+        // setSearchSoudamjohos(SoudanjohosData); // postsDataをセットする必要があります
+        return SoudanjohosData;
         console.log("Response:", responseSoudan.data);
         // 成功時の処理をここに追加
       } catch (error) {
         console.error("Error:", error);
+        return [];
         // エラーハンドリングをここに追加
       }
     }
   };
   
-  useEffect(() => {
-    TagSearch();
-  }, [choiceTag]);
+  const applyFiltersSoudan = async () => {
+    const tagFilteredSodans = await TagSearch();
+    const searchValueLower = searchValueSodan.toLowerCase();
+    const filteredSodans = tagFilteredSodans.filter((org) => {
+      const isOrganizationMatch =
+        org.organization_name.toLowerCase().includes(searchValueLower) ||
+        org.organization_body.toLowerCase().includes(searchValueLower) ||
+        org.link.toString().toLowerCase().includes(searchValueLower);
 
-  const postFunction = async () => {
-    await TagSearch();
-    if(searchValueSodan !==""){
-      handleInputSearch(searchValueSodan);
-    }
+      const isTagMatch =
+        org.tag &&
+        org.tag.some((tag: Tags) =>
+          tag.tag_body.toLowerCase().includes(searchValueLower)
+        );
+
+      return isOrganizationMatch || isTagMatch;
+    });
+
+    setSearchSoudamjohos(filteredSodans);
   };
+
+  useEffect(() => {
+    applyFiltersSoudan ();
+  }, [searchValueSodan, choiceTag]);
 
   return (
     <div className="bg-custom-background fixed top-0 left-0 w-screen h-screen bg-gradient-to-r from-gray-300 to-gray-200 bg-opacity-80 flex mx-auto w-100% h-screen overflow-y-scroll">
@@ -222,8 +234,7 @@ const Soudanjoho = () => {
           type="text"
           placeholder="文字を入力して検索"
           value={searchValueSodan}
-          onChange={(e) => handleInputChange(e)}
-          onKeyDown={handleKeyPress}
+          onChange={handleInputChange}
           className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-indigo-500 mb-3"
         />
         <div className="bg-white pt-10 pb-10 pl-10 pr-10 items-center justify-center rounded-lg mb-10">
@@ -241,7 +252,7 @@ const Soudanjoho = () => {
           <div className="flex justify-end">
             <div className="flex items-center bg-gray-500 opacity-60 rounded-full text-white px-7 py-3 button-hover w-32 ">
               <img src={search} alt="Icon" className="w-5 h-5 mr-2" />
-              <button onClick={postFunction}>検索</button>
+              <button onClick={applyFiltersSoudan}>検索</button>
             </div>
           </div>
         </div>
