@@ -127,7 +127,7 @@ const Moyakensaku = () => {
     const tagFilteredPosts = await TagSearch();
     const searchValueLower = searchValue.toLowerCase();
     const filteredPosts = tagFilteredPosts.filter((post) => {
-      const isOrganizationMatch =
+      const isPostMatch =
         post.user_name.toLowerCase().includes(searchValueLower) ||
         post.post_body.toLowerCase().includes(searchValueLower) ||
         post.created_at.toString().toLowerCase().includes(searchValueLower);
@@ -138,7 +138,7 @@ const Moyakensaku = () => {
           tag.tag_body.toLowerCase().includes(searchValueLower)
         );
 
-      return isOrganizationMatch || isTagMatch;
+      return isPostMatch || isTagMatch;
     });
 
     setSearchComments(filteredPosts);
